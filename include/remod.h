@@ -9,9 +9,12 @@
 #include <remod/resolve_strategy.h>
 #include <remod/remod_functions.h>
 
+// Definitions
+#include <remod/remod_definitions.h>
+
 // Win32-specific files
 #ifdef REMOD_WIN_DETECTED
-#include <remod/remod_win32.h>
+#include <remod/remod_definitions_win32.h>
 #endif
 
 
