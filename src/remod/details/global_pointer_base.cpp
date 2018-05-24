@@ -1,6 +1,7 @@
 
 #include <remod/details/global_pointer_base.h>
 #include <remod/details/global_pointer_registery.h>
+#include <cassert>
 
 
 remod::details::global_pointer_base::global_pointer_base(std::uintptr_t ptr): m_ptr(ptr)
@@ -26,6 +27,8 @@ bool remod::details::global_pointer_base::resolve()
 
 std::uintptr_t remod::details::global_pointer_base::get_pointer() const
 {
+	assert(is_resolved());
+
 	return m_ptr;
 }
 

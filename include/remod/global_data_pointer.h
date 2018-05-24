@@ -13,21 +13,17 @@ namespace remod
 
 		T* operator->()
 		{
-			assert(is_resolved());
-
 			return *reinterpret_cast<T**>(get_pointer());
 		}
 
 		T& operator* ()
 		{
-			assert(is_resolved());
-
 			return **reinterpret_cast<T**>(get_pointer());
 		}
 
 		T* Get()
 		{
-			return *reinterpret_cast<T**>(GetPointer());
+			return *reinterpret_cast<T**>(get_pointer());
 		}
 	};
 }
