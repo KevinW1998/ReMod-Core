@@ -1,0 +1,17 @@
+branches:
+  only:
+  - master
+image:
+- Visual Studio 2017
+configuration:
+- Release
+- Debug
+platform:
+- Win32
+build_script:
+- cmd: |-
+    mkdir build
+    cd build
+    cmake --version
+    cmake .. -G %generator%
+    cmake --build .
