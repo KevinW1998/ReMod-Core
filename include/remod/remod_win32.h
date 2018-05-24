@@ -7,11 +7,10 @@
 
 namespace remod
 {
-	template<const module& Module = main_module>
-	using global_pointer_win32 = global_pointer<win32::resolve_strategy_module_handle, Module>;
+	using global_pointer_win32 = global_pointer<win32::resolve_strategy_module_handle>;
 
-	template<typename T, const module& Module = main_module>
-	using global_data_pointer_win32 = global_data_pointer<T, win32::resolve_strategy_module_handle, Module>;
+	template<typename T>
+	using global_data_pointer_win32 = global_data_pointer<T, win32::resolve_strategy_module_handle>;
 }
 
 

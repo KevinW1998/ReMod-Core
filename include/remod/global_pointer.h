@@ -5,22 +5,25 @@
 
 namespace remod
 {
-	template<typename ResolveStrategy, const module& Module = main_module>
+	template<typename ResolveStrategy>
 	class global_pointer : public details::global_pointer_base
 	{
+		module m_module;
 	public:
-		using details::global_pointer_base::global_pointer_base;
+		global_pointer(std::uintptr_t ptr, const module& module = main_module) : 
+			global_pointer_base(ptr), 
+			m_module(module)
+		{}
 		~global_pointer() = default;
 
 	protected:
 		virtual bool resolve_pointer() override;
 	};
 
-
-	template <typename ResolveStrategy, const module& Module>
-	bool global_pointer<ResolveStrategy, Module>::resolve_pointer()
+	template <typename ResolveStrategy>
+	bool global_pointer<ResolveStrategy>::resolve_pointer()
 	{
-		return ResolveStrategy::resolve(get_pointer_raw_ref(), Module);
+		return ResolveStrategy::resolve(get_pointer_raw_ref(), m_module);
 	}
 }
 

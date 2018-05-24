@@ -5,11 +5,11 @@
 
 namespace remod
 {
-	template<typename T, typename ResolveStrategy, const module& Module = main_module>
-	class global_data_pointer : public global_pointer<ResolveStrategy, Module>
+	template<typename T, typename ResolveStrategy>
+	class global_data_pointer : public global_pointer<ResolveStrategy>
 	{
 	public:
-		using global_pointer<ResolveStrategy, Module>::global_pointer;
+		using global_pointer<ResolveStrategy>::global_pointer;
 
 		T* operator->()
 		{
