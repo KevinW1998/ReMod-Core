@@ -13,5 +13,5 @@ build_script:
     mkdir build
     cd build
     cmake --version
-    cmake .. -G %generator%
+    cmake .. -G Visual Studio 15 2017
     cmake --build .
