@@ -24,8 +24,8 @@ target_include_directories(ReModCore PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # == INSTALL ==
 install(TARGETS ReModCore
-    ARCHIVE DESTINATION "bin"
-    LIBRARY DESTINATION "lib"
+    ARCHIVE DESTINATION "lib"
+    LIBRARY DESTINATION "bin"
     RUNTIME DESTINATION "bin")
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/include/remod.h" DESTINATION "include")
