@@ -1,8 +1,10 @@
 #pragma once
 
+#include "common.h"
+
 namespace remod
 {
-	void resolve_all();
+	void REMOD_CORE_EXPORT resolve_all();
 }
 
 

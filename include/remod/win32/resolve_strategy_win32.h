@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common.h"
 #include <cstdint>
 
 namespace remod {
@@ -8,7 +9,7 @@ namespace remod {
 
 namespace remod::win32
 {
-	class resolve_strategy_module_handle
+	class REMOD_CORE_EXPORT resolve_strategy_module_handle
 	{
 	public:
 		static bool resolve(std::uintptr_t& to_resolve, const module& module);

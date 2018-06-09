@@ -1,12 +1,13 @@
 #pragma once
 
+#include "../common.h"
 #include <unordered_set>
 
 namespace remod::details
 {
 	class global_pointer_base;
 
-	class global_pointer_registry
+	class REMOD_CORE_EXPORT global_pointer_registry
 	{
 		// Data members
 		std::unordered_set<global_pointer_base*> m_bases;

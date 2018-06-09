@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../common.h"
 #include <cstdint>
 
 #pragma warning(push)
@@ -7,7 +8,7 @@
 
 namespace remod::details
 {
-	class global_pointer_base
+	class REMOD_CORE_EXPORT global_pointer_base
 	{
 		std::uintptr_t m_ptr;
 		bool m_resolved = false;

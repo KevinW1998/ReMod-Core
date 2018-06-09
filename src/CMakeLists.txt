@@ -38,12 +38,13 @@ target_compile_options(ReModCore PRIVATE
 )
 
 # TODO: Set additional compiler flags like /MP
-
+# TODO: Cleanup the parameters up there
 
 set_target_properties(ReModCore PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+	PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
 
@@ -59,5 +60,20 @@ install(TARGETS ReModCore
 install(DIRECTORY ../include/remod
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+
+install(EXPORT ReModCore-targets
+    FILE ReModCore-targets.cmake
+    NAMESPACE ReModCore::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/ReModCore
+)
+
+# TODO: Setup the rest of the config stuff...
+
+
+
+
+
+
+
 
 
