@@ -12,11 +12,5 @@ namespace remod
 		static bool resolve(std::uintptr_t& to_resolve, const module& module);
 	};
 
-	class resolve_strategy_static
-	{
-	public:
-		static bool resolve(std::uintptr_t& to_resolve, const module& module);
-	};
-
 }
 

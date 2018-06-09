@@ -2,6 +2,9 @@
 
 #include <cstdint>
 
+#pragma warning(push)
+#pragma warning(disable: 4820 4265) // unreferenced parameters
+
 namespace remod::details
 {
 	class global_pointer_base
@@ -25,3 +28,4 @@ namespace remod::details
 	};
 }
 
+#pragma warning(pop)
