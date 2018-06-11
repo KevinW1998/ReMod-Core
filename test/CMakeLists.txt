@@ -9,11 +9,12 @@ add_executable(ReModCoreTest ${REMOD_CORE_TEST_SRC})
 target_link_libraries(ReModCoreTest PRIVATE
     ReModCore::ReModCore
 )
-add_custom_command(TARGET ReModCoreTest POST_BUILD
-    COMMAND ${CMAKE_COMMAND} --verbose -E copy_if_different
-        "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ReModCore.dll"
-        $<TARGET_FILE_DIR:ReModCoreTest>)
-		
+set_target_properties(ReModCoreTest PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    PDB_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
 
 # Setup catch dependencies
 target_include_directories(ReModCoreTest PRIVATE ${CATCH_INCLUDE_DIR})
