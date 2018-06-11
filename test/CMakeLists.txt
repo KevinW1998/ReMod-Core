@@ -10,7 +10,7 @@ target_link_libraries(ReModCoreTest PRIVATE
     ReModCore::ReModCore
 )
 add_custom_command(TARGET ReModCoreTest POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    COMMAND ${CMAKE_COMMAND} --verbose -E copy_if_different
         "${CMAKE_BINARY_DIR}/bin/$<CONFIG>/ReModCore.dll"
         $<TARGET_FILE_DIR:ReModCoreTest>)
 		
