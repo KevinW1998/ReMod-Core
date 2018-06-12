@@ -16,3 +16,5 @@
       * after_detours
       * no_original_call
 * Create global_data container class
+* Setup standases for documentation
+* Setup asmjit
