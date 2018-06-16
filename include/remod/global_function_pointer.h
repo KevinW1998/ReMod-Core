@@ -9,7 +9,7 @@ namespace remod
 	template<calling_convention Conv, typename ResolveStrategy, typename T>
 	class global_function_pointer;
 
-	template<calling_convention Conv, typename ResolveStrategy, class Ret, class... Args >
+	template<calling_convention Conv, typename ResolveStrategy, typename Ret, typename... Args >
 	class global_function_pointer<Conv, ResolveStrategy, Ret(Args...)> : public global_pointer<ResolveStrategy>
 	{
 		using function_type = calling_convention_type<Conv, Ret, Args...>;

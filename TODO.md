@@ -1,15 +1,20 @@
 # TODO-List
 
-* Create base_patch_manager<typename resolve_strategy, typename impl> class
-   * function apply(detour_point)
-   * function apply_with_tracker(detour_point) : trackable_patch
+* Create base_patch_manager<typename resolve_strategy> class
+   * impl as typedef
+   * function apply<T(...)>(detour_point) : trackable_wrapper<trackable_function_patch<T(...)>>
+* Create trackable_patch class
+   * detach (no gc)
+   * patch
+   * unpatch
+* Create trackable_function_patch<T(...)> class : trackable_patch
+   * function add_function
 * Create detour_point class with:
    * constructor with single offset
    * stack-capture
    * register-capture
    * argument-capture
    * already pushed arguments
-   * attach std::function (or in already patched one? or both?)
    * select calling convention
    * return-register
    * select return value source [enum]
