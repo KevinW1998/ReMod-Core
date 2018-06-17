@@ -6,6 +6,11 @@ namespace remod
 	{
 	public:
 		virtual ~trackable_patch() = default;
+
+		virtual void patch() {};
+		virtual void unpatch() {};
+
+
 	};
 }
 

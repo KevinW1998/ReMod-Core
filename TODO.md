@@ -4,7 +4,6 @@
    * impl as typedef
    * function apply<T(...)>(detour_point) : trackable_wrapper<trackable_function_patch<T(...)>>
 * Create trackable_patch class
-   * detach (no gc)
    * patch
    * unpatch
 * Create trackable_function_patch<T(...)> class : trackable_patch
