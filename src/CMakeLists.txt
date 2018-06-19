@@ -9,6 +9,9 @@ ucm_add_dirs(remod TO REMOD_CORE_SRC RECURSIVE FILTER_POP 0)
 add_library(ReModCore ${REMOD_CORE_SRC})
 add_library(ReModCore::ReModCore ALIAS ReModCore)
 
+# Setup dependencies
+asmjit_add_dependency(ReModCore)
+
 # Setup Static and Shared Switch
 option(BUILD_SHARED_LIBS "Build shared library" ON)
 include(GenerateExportHeader)

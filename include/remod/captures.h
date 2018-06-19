@@ -6,6 +6,8 @@
 
 namespace remod
 {
+	// TODO: Map register with size
+
 	class REMOD_CORE_EXPORT base_offset_capture
 	{
 		std::uintptr_t m_offset;

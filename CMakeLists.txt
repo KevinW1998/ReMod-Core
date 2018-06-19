@@ -6,6 +6,7 @@ project(ReMod-Core
 
 # == INCLUDES ==
 include(cmake/3rdparty/ucm.cmake)
+include(cmake/3rdparty/depends/asmjit/asmjit.cmake)
 include(cmake/3rdparty/depends/catch2/catch2.cmake)
 
 # == COLLECT ALL SOURCES ==

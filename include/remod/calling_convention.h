@@ -8,7 +8,8 @@ namespace remod
 		conv_stdcall,
 		conv_cdecl,
 		conv_thiscall,
-		conv_fastcall
+		conv_fastcall,
+		conv_default
 	};
 }
 

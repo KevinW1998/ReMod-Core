@@ -1,7 +1,8 @@
 
 #include <remod/win32/patch_engine_win32.h>
 
-#include <memoryapi.h>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #include <stdexcept>
 
 // Maybe export to another class?
@@ -31,6 +32,9 @@ public:
 
 void remod::win32::patch_engine_win32::write(std::uintptr_t ptr, void* data, std::size_t size)
 {
+	if (size <= 0u)
+		return;
+
 	win32_virtual_protect raii_protect(ptr, size, PAGE_EXECUTE_READWRITE);
 
 	memcpy(reinterpret_cast<void*>(ptr), data, size);
@@ -38,6 +42,9 @@ void remod::win32::patch_engine_win32::write(std::uintptr_t ptr, void* data, std
 
 void remod::win32::patch_engine_win32::read(std::uintptr_t ptr, void* data, std::size_t size)
 {
+	if (size <= 0u)
+		return;
+
 	win32_virtual_protect raii_protect(ptr, size, PAGE_EXECUTE_READ);
 
 	memcpy(data, reinterpret_cast<void*>(ptr), size);
