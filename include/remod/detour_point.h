@@ -16,13 +16,12 @@ namespace remod
 	class detour_point
 	{
 		std::uintptr_t m_offset;
-		std::vector<capture_variant_t> m_args_captures;
+		std::vector<std::size_t> m_args_captures;
 		std::vector<capture_variant_t> m_extra_captures;
 		calling_convention m_convention = calling_convention::conv_stdcall;
 		registers m_return_register = registers::eax;
 		return_value_source m_ret_val_source = return_value_source::first_detour_function;
 		original_function_call m_orig_func_call = original_function_call::after_detours;
-		bool m_preserve_whole_stack = true;
 	public:
 		detour_point(std::uintptr_t offset) : m_offset(offset) {}
 
@@ -31,7 +30,17 @@ namespace remod
 		{
 			static_assert(sizeof(Ret) <= sizeof(std::uintptr_t), "Size must be equal or smaller than a processor register size");
 
+			m_args_captures = { sizeof(Args)... };
+		}
 
+		void add_capture(const capture_variant_t& capture)
+		{
+			m_extra_captures.push_back(capture);
+		}
+
+		void add_capture(capture_variant_t&& capture)
+		{
+			m_extra_captures.push_back(std::move(capture));
 		}
 
 		std::uintptr_t get_offset() const
@@ -52,6 +61,11 @@ namespace remod
 		calling_convention get_calling_convention() const
 		{
 			return m_convention;
+		}
+
+		const std::vector<std::size_t>& get_arg_sizes() const
+		{
+			return m_args_captures;
 		}
 
 	};

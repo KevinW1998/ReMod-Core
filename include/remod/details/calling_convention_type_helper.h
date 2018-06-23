@@ -3,6 +3,8 @@
 
 #include <remod/calling_convention.h>
 
+// TODO: Add information about the underlying conventions (size, params, ect...)
+
 namespace remod::details
 {
 	template<calling_convention Conv, typename Ret, typename... Args>

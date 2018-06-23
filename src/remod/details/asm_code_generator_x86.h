@@ -10,7 +10,7 @@ namespace remod::details
 	public:
 
 		// Stable API:
-		void* generator_call_conv_detour(detour_point to_convert, void* context_value, calling_convention target_call_conv);
+		void* generator_call_conv_detour(detour_point to_convert, void* context_value, calling_convention target_call_conv, void* func_to_call);
 	};
 }
 

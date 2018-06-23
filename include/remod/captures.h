@@ -7,6 +7,14 @@
 namespace remod
 {
 	// TODO: Map register with size
+	class REMOD_CORE_EXPORT base_capture
+	{
+		std::size_t m_capture_size;
+	public:
+		base_capture(std::size_t capture_size);
+
+		std::size_t get_capture_size() const;
+	};
 
 	class REMOD_CORE_EXPORT base_offset_capture
 	{
@@ -38,13 +46,7 @@ namespace remod
 		using base_offset_capture::base_offset_capture;
 	};
 
-	class REMOD_CORE_EXPORT pushed_argument_capture : base_offset_capture
-	{
-	public:
-		using base_offset_capture::base_offset_capture;
-	};
-
-	using capture_variant_t = std::variant<stack_capture, register_capture, argument_capture, pushed_argument_capture>;
+	using capture_variant_t = std::variant<stack_capture, register_capture, argument_capture>;
 }
 
 

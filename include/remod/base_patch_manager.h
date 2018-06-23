@@ -15,6 +15,7 @@ namespace remod
 		details::patch_store m_patch_store;
 		std::unique_ptr<details::asm_code_generator> m_generator;
 	protected:
+		base_patch_manager();
 
 		details::patch_store* get_patch_store()
 		{

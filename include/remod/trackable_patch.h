@@ -7,10 +7,13 @@ namespace remod
 {
 	class REMOD_CORE_EXPORT trackable_patch
 	{
+	friend class base_patch_manager;
 		std::uintptr_t m_patch_ptr;
 		std::vector<std::uint8_t> m_data;
 		std::vector<std::uint8_t> m_orig_data;
 		bool m_is_patched = false;
+	protected:
+		void set_data(std::vector<std::uint8_t>&& data);
 	public:
 		trackable_patch(std::uintptr_t patch_ptr, const std::vector<std::uint8_t>& data);
 		trackable_patch(std::uintptr_t patch_ptr, std::vector<std::uint8_t>&& data);

@@ -2,6 +2,11 @@
 
 #include <remod/patch_engine.h>
 
+void remod::trackable_patch::set_data(std::vector<std::uint8_t>&& data)
+{
+	m_data = std::move(data);
+}
+
 remod::trackable_patch::trackable_patch(std::uintptr_t patch_ptr, const std::vector<std::uint8_t>& data) : 
 	m_patch_ptr(patch_ptr), 
 	m_data(data),

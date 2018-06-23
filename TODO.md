@@ -30,3 +30,6 @@
    * Create class asm_code_generator_x64
 * Setup standases for documentation
 * Setup asmjit
+* Add template classes for wrapping registers eax<int>, ecx<int>, ect...
+* Add template function container: T<Ret(Args...)>
+

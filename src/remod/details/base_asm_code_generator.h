@@ -1,6 +1,9 @@
 #pragma once
 
 #include <asmjit/asmjit.h>
+#include "remod/calling_convention.h"
+#include <vector>
+#include <tuple>
 
 namespace remod::details
 {
@@ -8,10 +11,10 @@ namespace remod::details
 	{
 		asmjit::JitRuntime m_runtime;
 	protected:
-		asmjit::JitRuntime& get_runtime()
-		{
-			return m_runtime;
-		}
+		asmjit::JitRuntime& get_runtime();
+
+		// Helper functions:
+		int calculate_stack_cleanup_size(calling_convention conv, const std::vector<size_t>& args);
 	public:
 
 	};
