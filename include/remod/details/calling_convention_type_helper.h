@@ -41,7 +41,7 @@ namespace remod::details
 	};
 
 	template<typename Ret, typename... Args>
-	inline Ret call_by_convetion(calling_convention conv, void* ptr, Args args...)
+	inline Ret call_by_convetion(calling_convention conv, void* ptr, Args... args)
 	{
 		switch (conv)
 		{
