@@ -2,13 +2,8 @@
 #include "asm_code_generator_x86.h"
 
 
-void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_point to_convert, void* context_value,
-	calling_convention target_call_conv, void* func_to_call)
+void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_point to_convert, void* context_value, void* func_to_call)
 {
-	// Currently as target only cdecl is supported
-	if (target_call_conv != calling_convention::conv_cdecl)
-		throw std::runtime_error("Unsupported calling convention");
-
 	// Grab the information we need
 	calling_convention source_call_conv = to_convert.get_calling_convention();
 	const auto& arg_sizes = to_convert.get_arg_sizes();
@@ -20,6 +15,9 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	// Init assembler
 	asmjit::X86Assembler a(&code);
 
+	// TODO: Use target call conv --> always cdecl
+	// TODO: Validate args for callconv (i.e. validate_args_by_call_conv)
+	// TODO: Extract prologue to own function (i.e. transform_call_conv_prologue)
 
 	if(source_call_conv == calling_convention::conv_fastcall) // fastcall --> cdecl
 	{
