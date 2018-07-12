@@ -10,6 +10,7 @@ namespace remod::details
 	public:
 
 		// Stable API:
+		void validate_args_by_call_conv(const std::vector<std::size_t>& arg_sizes, calling_convention call_conv);
 		void* generator_call_conv_detour(detour_point to_convert, void* context_value, void* func_to_call);
 	};
 }
