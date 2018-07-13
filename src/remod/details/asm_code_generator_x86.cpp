@@ -36,6 +36,7 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	// Grab the information we need
 	calling_convention source_call_conv = to_convert.get_calling_convention();
 	const auto& arg_sizes = to_convert.get_arg_sizes();
+	int arg_num = arg_sizes.size();
 
 	
 	asmjit::CodeHolder code;// Holds code and relocation information.
@@ -49,12 +50,15 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	// TODO: Extract prologue to own function (i.e. transform_call_conv_prologue)
 	if(source_call_conv == calling_convention::conv_fastcall) // fastcall --> cdecl
 	{
-		a.push(asmjit::x86::edx); // TODO: Only push if needed
-		a.push(asmjit::x86::ecx); // TODO: Only push if needed
+		if (arg_num >= 1) 
+			a.push(asmjit::x86::edx); // TODO: Only push if needed
+		if (arg_num >= 2)
+			a.push(asmjit::x86::ecx); // TODO: Only push if needed
 	} 
 	else if (source_call_conv == calling_convention::conv_thiscall) // thiscall --> cdecl
 	{
-		a.push(asmjit::x86::ecx); // TODO: Only push if needed
+		if (arg_num >= 1)
+			a.push(asmjit::x86::ecx); // TODO: Only push if needed
 	}
 
 	// TODO: Push extra arguments
@@ -66,7 +70,7 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	int stack_to_cleanup = calculate_stack_cleanup_size(source_call_conv, arg_sizes);
 	// TODO: ASM sub with cleanup --> for cdecl
 
-	if(source_call_conv == calling_convention::conv_cdecl)
+	if(source_call_conv != calling_convention::conv_cdecl)
 	{
 		a.ret(4); // Only cleanup context_value
 	} 
