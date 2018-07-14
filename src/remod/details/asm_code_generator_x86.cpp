@@ -58,7 +58,7 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	calling_convention source_call_conv = to_convert.get_calling_convention();
 	const auto& arg_sizes = to_convert.get_arg_sizes();
 	int arg_num = arg_sizes.size();
-
+	int stack_to_manage = calculate_stack_to_manage(source_call_conv, arg_sizes);
 	
 	asmjit::CodeHolder code;// Holds code and relocation information.
 	code.init(get_runtime().getCodeInfo());// Initialize to the same arch as JIT runtime.
@@ -66,26 +66,30 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	// Init assembler
 	asmjit::X86Assembler a(&code);
 
+	// First validate the arguments by signature
 	validate_args_by_call_conv(to_convert.get_arg_sizes(), source_call_conv);
+
+	// TODO: Check https://en.wikibooks.org/wiki/X86_Disassembly/Functions_and_Stack_Frames
+	// Then push the args 
+	for (int i = 0; i < stack_to_manage; i += 4)
+		a.push(asmjit::x86::ptr(asmjit::x86::esp, i + 4));
+
+	// push the args by calling convention
 	generate_call_conv_prologue(a, source_call_conv, arg_num);
 
 	// Last
 	a.push(reinterpret_cast<int>(context_value));
 	a.call(reinterpret_cast<std::intptr_t>(func_to_call));
 
-	// Now calculate the stack to cleanup
-	int stack_to_cleanup = calculate_stack_cleanup_size(source_call_conv, arg_sizes);
-	// TODO: ASM sub with cleanup --> for cdecl
-
-	if(source_call_conv != calling_convention::conv_cdecl)
+	if(source_call_conv == calling_convention::conv_cdecl)
 	{
-		a.ret(4); // Only cleanup context_value
-	} 
+		a.ret(4);
+	}
 	else
 	{
-		a.ret(stack_to_cleanup + 4); // Args [with fastcall or thiscall reg args omitted] + context_value
+		a.ret(stack_to_manage + 4); // Args [with fastcall or thiscall reg args omitted] + context_value
 	}
-
+	
 	void* fn = nullptr;
 	asmjit::Error err = get_runtime().add(&fn, &code);
 

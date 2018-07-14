@@ -14,7 +14,7 @@ namespace remod::details
 		asmjit::JitRuntime& get_runtime();
 
 		// Helper functions:
-		int calculate_stack_cleanup_size(calling_convention conv, const std::vector<size_t>& args);
+		int calculate_stack_to_manage(calling_convention conv, const std::vector<size_t>& args);
 	public:
 
 	};

@@ -6,7 +6,7 @@ asmjit::JitRuntime& remod::details::base_asm_code_generator::get_runtime()
 	return m_runtime;
 }
 
-int remod::details::base_asm_code_generator::calculate_stack_cleanup_size(calling_convention conv,
+int remod::details::base_asm_code_generator::calculate_stack_to_manage(calling_convention conv,
 	const std::vector<size_t>& args)
 {
 	std::size_t params_to_pop = 0;
