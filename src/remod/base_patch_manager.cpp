@@ -39,5 +39,5 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 
 	// TODO: Move to trackable_patch
 	// patch CALL-Instruction
-	patch->set_data({ buf_bytes, buf_bytes + (1 + sizeof(std::int32_t)) });
+	patch->set_data(addr_for_patch, { buf_bytes, buf_bytes + (1 + sizeof(std::int32_t)) });
 }

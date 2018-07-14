@@ -3,6 +3,7 @@
 #include "remod_test_utils.h"
 #include "remod/patch_manager.h"
 #include "remod/win32/resolve_strategy_win32.h"
+#include "remod/resolve_strategy.h"
 
 
 int REMOD_NOINLINE __cdecl calc_square(int value)
@@ -24,7 +25,7 @@ TEST_CASE("Test trackable_patch", "[remod-trackable-function-patch]")
 	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&calc_func_usage_example));
 
 	// This is the patch manager, holding all patches
-	remod::patch_manager<remod::win32::resolve_strategy_module_handle> my_patch_manager;
+	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 
 	// A stateful-lambda wrapped in std::function
 	std::function<int(int)> calc_patch = [](int value)
@@ -43,5 +44,6 @@ TEST_CASE("Test trackable_patch", "[remod-trackable-function-patch]")
 	// Now add our detour function. You can add multiple detour functions if you want.
 	my_trackable_patch->add_detour_function(calc_patch);
 
+	calc_func_usage_example();
 }
 

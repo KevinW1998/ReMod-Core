@@ -21,7 +21,6 @@ the standard library.
 #include <tuple>
 #include <functional>
 #include <type_traits>
-#include "../function_signature.h"
 
 namespace remod::details {
 
@@ -126,9 +125,7 @@ namespace remod::details {
 		};
 
 		// edit - KevinW1998 14/07/2018
-		using clean_signature = remod::function_signature<ReturnType(Args...)>;
 		using arg_sizes = std::index_sequence<sizeof(Args)...>;
-		// constexpr static const std::initializer_list<std::size_t> arg_sizes = { sizeof(Args)... };
 	};
 
 	template <typename ReturnType, typename... Args>

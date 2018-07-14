@@ -3,10 +3,10 @@
 namespace remod
 {
 	template<typename>
-	class function_signature;
+	struct function_signature;
 	
 	template<typename Ret, typename... Args>
-	class function_signature<Ret(Args...)> {};
+	struct function_signature<Ret(Args...)> {};
 }
 
 
