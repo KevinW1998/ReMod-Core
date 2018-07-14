@@ -14,12 +14,10 @@ namespace remod
 	class REMOD_CORE_EXPORT patch_manager : base_patch_manager
 	{
 		module m_mod;
-	public:
-		patch_manager(const module& mod) : m_mod(mod)
-		{}
+
 
 		template<typename Ret, typename... Args>
-		trackable_wrapper<trackable_function_patch<Ret(Args...)>> apply(const detour_point& detour_point_to_apply, function_signature<Ret(Args...)>)
+		trackable_wrapper<trackable_function_patch<Ret(Args...)>> apply_impl(const detour_point& detour_point_to_apply, function_signature<Ret(Args...)>)
 		{
 			static_assert(sizeof(Ret) <= 4, "Currently only return values less than or equal 4 bytes are supported!");
 
@@ -45,6 +43,15 @@ namespace remod
 			generate_function_patch(addr, func_patch, proxy, detour_point_to_apply);
 
 			return { get_patch_store(), func_patch };
+		}
+	public:
+		patch_manager(const module& mod = remod::main_module) : m_mod(mod)
+		{}
+
+		template<typename Func>
+		auto apply(const detour_point& detour_point_to_apply, Func)
+		{
+			return apply_impl(detour_point_to_apply, details::function_traits<Func>::clean_signature());
 		}
 
 

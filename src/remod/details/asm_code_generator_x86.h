@@ -11,6 +11,7 @@ namespace remod::details
 
 		// Stable API:
 		void validate_args_by_call_conv(const std::vector<std::size_t>& arg_sizes, calling_convention call_conv);
+		void generate_call_conv_prologue(asmjit::X86Assembler& assembler, calling_convention source_call_conv, int arg_num);
 		void* generator_call_conv_detour(detour_point to_convert, void* context_value, void* func_to_call);
 	};
 }

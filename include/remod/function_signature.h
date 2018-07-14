@@ -6,11 +6,7 @@ namespace remod
 	class function_signature;
 	
 	template<typename Ret, typename... Args>
-	class function_signature<Ret(Args...)> {
-		
-	public:
-
-	};
+	class function_signature<Ret(Args...)> {};
 }
 
 

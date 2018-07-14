@@ -13,7 +13,7 @@ namespace remod
 	class trackable_function_patch;
 	
 	template<typename Ret, typename... Args>
-	class trackable_function_patch<Ret(Args...)> : trackable_patch {
+	class trackable_function_patch<Ret(Args...)> : public trackable_patch {
 		std::vector<std::function<Ret(Args...)>> m_detour_functions;
 		return_value_source m_ret_val_source = return_value_source::first_detour_function;
 		original_function_call m_orig_func_call = original_function_call::after_detours;
@@ -34,7 +34,7 @@ namespace remod
 		}
 
 		// TODO: Extract to own function?
-		Ret operator()(Args args...) const {
+		Ret operator()(Args... args) const {
 			Ret rValOrig;
 			if (m_orig_func_call == original_function_call::before_detours && m_orig_func)
 				rValOrig = details::call_by_convetion<Ret, Args...>(m_call_conv, m_orig_func, args...);

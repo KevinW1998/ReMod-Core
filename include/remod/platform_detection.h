@@ -17,3 +17,13 @@
 	#error "Environment not 32 or 64-bit."
 #endif
 
+
+
+// Compiler dependent features
+#if _MSC_VER && !__INTEL_COMPILER
+#define REMOD_NOINLINE __declspec(noinline)
+#else
+#define REMOD_NOINLINE __attribute__((noinline))
+#endif
+
+

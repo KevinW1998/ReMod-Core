@@ -7,6 +7,10 @@
 remod::base_patch_manager::base_patch_manager() : m_generator(std::make_unique<details::asm_code_generator>())
 {}
 
+remod::base_patch_manager::~base_patch_manager()
+{
+}
+
 void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_patch, trackable_patch* patch,
 	void* proxy, const detour_point& detour_point_to_apply)
 {
@@ -15,7 +19,7 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 
 
 	std::uintptr_t orig_addr = 0;
-
+	
 	// Currently we only support relative call patches
 	if (buf_bytes[0] == 0xE8)
 	{
