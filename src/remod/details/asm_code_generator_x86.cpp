@@ -1,5 +1,6 @@
 
 #include "asm_code_generator_x86.h"
+#include <numeric>
 
 
 void remod::details::asm_code_generator_x86::validate_args_by_call_conv(const std::vector<std::size_t>& arg_sizes,
@@ -56,9 +57,12 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 {
 	// Grab the information we need
 	calling_convention source_call_conv = to_convert.get_calling_convention();
+	source_call_conv = source_call_conv == calling_convention::conv_default ? calling_convention::conv_cdecl : source_call_conv; // default --> cdecl
+
 	const auto& arg_sizes = to_convert.get_arg_sizes();
 	int arg_num = arg_sizes.size();
 	int stack_to_manage = calculate_stack_to_manage(source_call_conv, arg_sizes);
+	int detour_stack_to_manage = std::accumulate(arg_sizes.begin(), arg_sizes.end(), 0, [](std::size_t cur, std::size_t val) {return cur + (val <= 4 ? 4 : val); });
 	
 	asmjit::CodeHolder code;// Holds code and relocation information.
 	code.init(get_runtime().getCodeInfo());// Initialize to the same arch as JIT runtime.
@@ -71,8 +75,10 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 
 	// TODO: Check https://en.wikibooks.org/wiki/X86_Disassembly/Functions_and_Stack_Frames
 	// Then push the args 
+	asmjit::X86Mem push_ptr = asmjit::x86::dword_ptr(asmjit::x86::esp, 4);
+	
 	for (int i = 0; i < stack_to_manage; i += 4)
-		a.push(asmjit::x86::ptr(asmjit::x86::esp, i + 4));
+		a.push(push_ptr);
 
 	// push the args by calling convention
 	generate_call_conv_prologue(a, source_call_conv, arg_num);
@@ -81,17 +87,18 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 	a.push(reinterpret_cast<int>(context_value));
 	a.call(reinterpret_cast<std::intptr_t>(func_to_call));
 
-	if(source_call_conv == calling_convention::conv_cdecl)
-	{
-		a.ret(4);
-	}
+	a.add(asmjit::x86::esp, detour_stack_to_manage + 4);
+
+	if (source_call_conv == calling_convention::conv_stdcall)
+		a.ret(stack_to_manage);
 	else
-	{
-		a.ret(stack_to_manage + 4); // Args [with fastcall or thiscall reg args omitted] + context_value
-	}
+		a.ret();
+
 	
 	void* fn = nullptr;
-	asmjit::Error err = get_runtime().add(&fn, &code);
+	asmjit::ErrorCode err = static_cast<asmjit::ErrorCode>(get_runtime().add(&fn, &code));
+	if(err)
+		throw std::runtime_error("Failed to generate code");
 
 	return fn;
 }

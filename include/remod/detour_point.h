@@ -19,12 +19,11 @@ namespace remod
 		std::uintptr_t m_offset;
 		std::vector<std::size_t> m_args_captures;
 		std::vector<capture_variant_t> m_extra_captures;
-		calling_convention m_convention = calling_convention::conv_stdcall;
+		calling_convention m_convention = calling_convention::conv_cdecl;
 		registers m_return_register = registers::eax;
 		return_value_source m_ret_val_source = return_value_source::first_detour_function;
 		original_function_call m_orig_func_call = original_function_call::after_detours;
 
-	private:
 		template<std::size_t... Ints>
 		void init_by_index_seq(std::index_sequence<Ints...>)
 		{
@@ -34,35 +33,14 @@ namespace remod
 	public:
 		detour_point(std::uintptr_t offset) : m_offset(offset) {}
 
-		/*
-		template<typename Ret, typename... Args>
-		void init_with_signature(function_signature<Ret(Args...)> sig)
-		{
-			static_assert(sizeof(Ret) <= sizeof(std::uintptr_t), "Size must be equal or smaller than a processor register size");
-
-			m_args_captures = { sizeof(Args)... };
-		}
-		*/
-		
-		/*
-		template<typename FuncContainer, typename Ret, typename... Args>
-		void init_with_signature(const FuncContainer<Ret(Args...)>& sig)
-		{
-			static_assert(sizeof(Ret) <= sizeof(std::uintptr_t), "Size must be equal or smaller than a processor register size");
-
-			m_args_captures = { sizeof(Args)... };
-		}
-		 */
-
 		template<typename FuncContainer>
 		void init_with_signature(FuncContainer func)
 		{
 			using func_type = details::function_traits<FuncContainer>;
 
-			static_assert(sizeof(func_type::result_type) <= sizeof(std::uintptr_t), "Size must be equal or smaller than a processor register size");
+			static_assert(sizeof(func_type::result_type) <= sizeof(std::uintptr_t), "Size of the return value must be equal or smaller than a processor register size");
 
 			init_by_index_seq(func_type::arg_sizes());
-			// m_args_captures = func_type::arg_sizes;
 		}
 
 		void add_capture(const capture_variant_t& capture)

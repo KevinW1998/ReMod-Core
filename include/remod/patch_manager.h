@@ -34,13 +34,11 @@ namespace remod
 			get_patch_store()->add_patch(func_patch);
 			func_patch->set_original_function_call(detour_point_to_apply.get_original_function_call());
 			func_patch->set_return_value_source(detour_point_to_apply.get_return_value_source());
-			func_patch->set_original_function(reinterpret_cast<void*>(addr));
 			
 			auto proxy = +[](trackable_function_patch<Ret(Args...)>* patch, Args... args)
 			{
 				return (*patch)(args...);
-			};
-			
+			};			
 			
 			// Generate the patch and apply the patch
 			generate_function_patch(addr, func_patch, reinterpret_cast<void*>(proxy), detour_point_to_apply);

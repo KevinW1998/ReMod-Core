@@ -6,6 +6,7 @@
 #include "return_value_source.h"
 #include "original_function_call.h"
 #include "details/calling_convention_type_helper.h"
+#include "details/trackable_function_patch_base.h"
 
 namespace remod
 {
@@ -13,15 +14,11 @@ namespace remod
 	class trackable_function_patch;
 	
 	template<typename Ret, typename... Args>
-	class trackable_function_patch<Ret(Args...)> : public trackable_patch {
+	class trackable_function_patch<Ret(Args...)> : public trackable_function_patch_base {
 		std::vector<std::function<Ret(Args...)>> m_detour_functions;
-		return_value_source m_ret_val_source = return_value_source::first_detour_function;
-		original_function_call m_orig_func_call = original_function_call::after_detours;
-		calling_convention m_call_conv = calling_convention::conv_default;
-		void* m_orig_func;
 	public:
 		// Inherit ctor
-		using trackable_patch::trackable_patch;
+		using trackable_function_patch_base::trackable_function_patch_base;
 
 		void add_detour_function(const std::function<Ret(Args...)>& func)
 		{
@@ -35,11 +32,11 @@ namespace remod
 
 		// TODO: Extract to own function?
 		Ret operator()(Args... args) const {
-			Ret rValOrig;
+			Ret rValOrig{};
 			if (m_orig_func_call == original_function_call::before_detours && m_orig_func)
 				rValOrig = details::call_by_convetion<Ret, Args...>(m_call_conv, m_orig_func, args...);
 
-			Ret rValDetour;
+			Ret rValDetour{};
 			if (m_detour_functions.size() > 0u)
 			{
 				rValDetour = m_detour_functions[0](args...);
@@ -55,21 +52,6 @@ namespace remod
 			if (m_ret_val_source == return_value_source::original_function)
 				return rValOrig;
 			return rValDetour;
-		}
-
-		void set_return_value_source(return_value_source source)
-		{
-			m_ret_val_source = source;
-		}
-
-		void set_original_function_call(original_function_call orig_call)
-		{
-			m_orig_func_call = orig_call;
-		}
-
-		void set_original_function(void* orig)
-		{
-			m_orig_func = orig;
 		}
 	};
 }

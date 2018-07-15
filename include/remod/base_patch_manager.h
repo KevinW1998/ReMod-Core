@@ -5,6 +5,7 @@
 #include "common.h"
 #include "details/patch_store.h"
 #include "details/asm_code_generator.h"
+#include "details/trackable_function_patch_base.h"
 
 namespace remod
 {
@@ -23,7 +24,7 @@ namespace remod
 			return &m_patch_store;
 		}
 
-		void generate_function_patch(std::uintptr_t addr_for_patch, trackable_patch* patch, void* proxy, const detour_point& detour_point_to_apply);
+		void generate_function_patch(std::uintptr_t addr_for_patch, trackable_function_patch_base* patch, void* proxy, const detour_point& detour_point_to_apply);
 
 	};
 }

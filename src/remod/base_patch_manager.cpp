@@ -11,7 +11,7 @@ remod::base_patch_manager::~base_patch_manager()
 {
 }
 
-void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_patch, trackable_patch* patch,
+void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_patch, trackable_function_patch_base* patch,
 	void* proxy, const detour_point& detour_point_to_apply)
 {
 	std::uint8_t buf_bytes[10];
@@ -40,4 +40,5 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 	// TODO: Move to trackable_patch
 	// patch CALL-Instruction
 	patch->set_data(addr_for_patch, { buf_bytes, buf_bytes + (1 + sizeof(std::int32_t)) });
+	patch->set_original_function(reinterpret_cast<void*>(orig_addr));
 }

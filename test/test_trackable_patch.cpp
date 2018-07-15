@@ -44,6 +44,6 @@ TEST_CASE("Test trackable_patch", "[remod-trackable-function-patch]")
 	// Now add our detour function. You can add multiple detour functions if you want.
 	my_trackable_patch->add_detour_function(calc_patch);
 
-	calc_func_usage_example();
+	REQUIRE(calc_func_usage_example() == 21);
 }
 
