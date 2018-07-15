@@ -57,5 +57,33 @@ namespace remod::details
 			return reinterpret_cast<Ret(*)(Args...)>(ptr)(args...);
 		}
 	}
+
+	template<typename T>
+	struct convention_traits;
+
+	template<typename Ret, typename... Args>
+	struct convention_traits<Ret __cdecl(Args...)>
+	{
+		constexpr static const calling_convention call_conv = calling_convention::conv_cdecl;
+	};
+
+	template<typename Ret, typename... Args>
+	struct convention_traits<Ret __stdcall(Args...)>
+	{
+		constexpr static const calling_convention call_conv = calling_convention::conv_stdcall;
+	};
+
+	template<typename Ret, typename... Args>
+	struct convention_traits<Ret __fastcall(Args...)>
+	{
+		constexpr static const calling_convention call_conv = calling_convention::conv_fastcall;
+	};
+
+	// TODO: Fix detection for thiscall
+	template<typename Ret, typename... Args>
+	struct convention_traits<Ret (__thiscall*)(Args...)>
+	{
+		constexpr static const calling_convention call_conv = calling_convention::conv_thiscall;
+	};
 }
 
