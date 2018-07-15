@@ -15,3 +15,8 @@ void remod::trackable_function_patch_base::set_original_function(void* orig)
 {
 	m_orig_func = orig;
 }
+
+void remod::trackable_function_patch_base::set_calling_convention(calling_convention call_conv)
+{
+	m_call_conv = call_conv;
+}

@@ -78,6 +78,26 @@ namespace remod
 			return m_args_captures;
 		}
 
+		void set_convention(calling_convention calling_convention)
+		{
+			m_convention = calling_convention;
+		}
+
+		void set_return_register(registers registers)
+		{
+			m_return_register = registers;
+		}
+
+		void set_ret_val_source(return_value_source return_value_source)
+		{
+			m_ret_val_source = return_value_source;
+		}
+
+		void set_orig_func_call(original_function_call original_function_call)
+		{
+			m_orig_func_call = original_function_call;
+		}
+
 	};
 }
 

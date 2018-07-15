@@ -78,21 +78,40 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 }
 
 
-int REMOD_NOINLINE __fastcall sum_val(int a, int b)
+int REMOD_NOINLINE __fastcall sum_val(int a, int b, int c)
 {
-	return a + b;
+	return a + b + c;
 }
 
-int calc_sum_usage_example()
+int REMOD_NOINLINE calc_sum_usage_example()
 {
-	return 0;
+	return sum_val(3, 2, 1);
 }
-
-
 
 TEST_CASE("Test fastcall", "[remod-trackable-function-patch]")
 {
-	
+	REQUIRE(calc_sum_usage_example() == 6);
+
+	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&calc_sum_usage_example));
+
+	auto calc_patch = [](int a, int b, int c)
+	{
+		return a - b + c;
+	};
+
+	// This is the patch manager, holding all patches
+	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
+
+	remod::detour_point my_detour(to_patch);
+	my_detour.set_convention(remod::calling_convention::conv_fastcall);
+	my_detour.init_with_signature(calc_patch); // Here we init the args, which get passed by the caller
+
+	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
+
+	// Now add our detour function. You can add multiple detour functions if you want.
+	my_trackable_patch->add_detour_function(calc_patch);
+
+	REQUIRE(calc_sum_usage_example() == 2);
 }
 
 

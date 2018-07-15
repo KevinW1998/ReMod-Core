@@ -21,6 +21,7 @@ namespace remod
 		void set_return_value_source(return_value_source source);
 		void set_original_function_call(original_function_call orig_call);
 		void set_original_function(void* orig);
+		void set_calling_convention(calling_convention call_conv);
 	};
 }
 

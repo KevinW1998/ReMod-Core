@@ -89,7 +89,7 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 
 	a.add(asmjit::x86::esp, detour_stack_to_manage + 4);
 
-	if (source_call_conv == calling_convention::conv_stdcall)
+	if (source_call_conv != calling_convention::conv_cdecl)
 		a.ret(stack_to_manage);
 	else
 		a.ret();
