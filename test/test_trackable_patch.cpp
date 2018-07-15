@@ -18,7 +18,7 @@ int REMOD_NOINLINE calc_func_usage_example()
 }
 
 
-TEST_CASE("Test trackable_patch", "[remod-trackable-function-patch]")
+TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function-patch]")
 {	
 	REQUIRE(calc_func_usage_example() == 101);
 
@@ -44,6 +44,29 @@ TEST_CASE("Test trackable_patch", "[remod-trackable-function-patch]")
 	// Now add our detour function. You can add multiple detour functions if you want.
 	my_trackable_patch->add_detour_function(calc_patch);
 
+	// Test if the patch is working
 	REQUIRE(calc_func_usage_example() == 21);
+
+
+	// Now try unpatching
+	my_trackable_patch->unpatch();
+	REQUIRE(calc_func_usage_example() == 101);
+
+	// Now try repatching
+	my_trackable_patch->patch();
+	REQUIRE(calc_func_usage_example() == 21);
+
+	// Now try getting the return value from source
+	my_trackable_patch->set_return_value_source(remod::return_value_source::original_function);
+	REQUIRE(calc_func_usage_example() == 101);
+
+	// Now add a new observer
+	my_trackable_patch->add_detour_function([](int value)
+	{
+		REQUIRE(value == 10);
+		return 0;
+	});
+	calc_func_usage_example();
+
 }
 

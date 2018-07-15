@@ -20,14 +20,10 @@ namespace remod
 		// Inherit ctor
 		using trackable_function_patch_base::trackable_function_patch_base;
 
-		void add_detour_function(const std::function<Ret(Args...)>& func)
+		template<typename Func>
+		void add_detour_function(Func&& func)
 		{
-			m_detour_functions.push_back(func);
-		}
-
-		void add_detour_function(std::function<Ret(Args...)>&& func)
-		{
-			m_detour_functions.push_back(std::move(func));
+			m_detour_functions.push_back(std::forward<Func>(func));
 		}
 
 		// TODO: Extract to own function?
