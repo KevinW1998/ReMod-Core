@@ -33,6 +33,11 @@ namespace remod
 	public:
 		detour_point(std::uintptr_t offset) : m_offset(offset) {}
 
+		template<typename Func>
+		detour_point(std::uintptr_t offset, Func func) : detour_point(offset) {
+			init_with_signature(func);
+		}
+
 		template<typename FuncContainer>
 		void init_with_signature(FuncContainer func)
 		{
