@@ -25,7 +25,7 @@ namespace remod
 		trackable_patch& operator=(const trackable_patch& other) = delete;
 		trackable_patch& operator=(trackable_patch&& other) noexcept = delete;
 
-		virtual ~trackable_patch() = default;
+		virtual ~trackable_patch();
 
 		// TODO: Use trackable_patch
 		virtual void patch();

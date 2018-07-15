@@ -37,36 +37,62 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 	remod::detour_point my_detour(to_patch);
 	my_detour.init_with_signature(calc_patch); // Here we init the args, which get passed by the caller
 
-	// Here apply the patch. my_trackable_patch is RAII protected, so if it gets
-	// out of scope, then it gets unpatched.
-	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
-
-	// Now add our detour function. You can add multiple detour functions if you want.
-	my_trackable_patch->add_detour_function(calc_patch);
-
-	// Test if the patch is working
-	REQUIRE(calc_func_usage_example() == 21);
-
-
-	// Now try unpatching
-	my_trackable_patch->unpatch();
-	REQUIRE(calc_func_usage_example() == 101);
-
-	// Now try repatching
-	my_trackable_patch->patch();
-	REQUIRE(calc_func_usage_example() == 21);
-
-	// Now try getting the return value from source
-	my_trackable_patch->set_return_value_source(remod::return_value_source::original_function);
-	REQUIRE(calc_func_usage_example() == 101);
-
-	// Now add a new observer
-	my_trackable_patch->add_detour_function([](int value)
+	// Test scoping
 	{
-		REQUIRE(value == 10);
-		return 0;
-	});
-	calc_func_usage_example();
+		// Here apply the patch. my_trackable_patch is RAII protected, so if it gets
+		// out of scope, then it gets unpatched.
+		auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
 
+		// Now add our detour function. You can add multiple detour functions if you want.
+		my_trackable_patch->add_detour_function(calc_patch);
+
+		// Test if the patch is working
+		REQUIRE(calc_func_usage_example() == 21);
+
+
+		// Now try unpatching
+		my_trackable_patch->unpatch();
+		REQUIRE(calc_func_usage_example() == 101);
+
+		// Now try repatching
+		my_trackable_patch->patch();
+		REQUIRE(calc_func_usage_example() == 21);
+
+		// Now try getting the return value from source
+		my_trackable_patch->set_return_value_source(remod::return_value_source::original_function);
+		REQUIRE(calc_func_usage_example() == 101);
+
+		// Now add a new observer
+		my_trackable_patch->add_detour_function([](int value)
+		{
+			REQUIRE(value == 10);
+			return 0;
+		});
+
+		my_trackable_patch->set_return_value_source(remod::return_value_source::first_detour_function);
+		REQUIRE(calc_func_usage_example() == 21);
+	} // my_trackable_patch out of scope --> destroyed
+	
+	// if my_trackable_patch is out of scope and is not detached, then it gets unpatched again
+	REQUIRE(calc_func_usage_example() == 101);
 }
+
+
+int REMOD_NOINLINE __fastcall sum_val(int a, int b)
+{
+	return a + b;
+}
+
+int calc_sum_usage_example()
+{
+	return 0;
+}
+
+
+
+TEST_CASE("Test fastcall", "[remod-trackable-function-patch]")
+{
+	
+}
+
 
