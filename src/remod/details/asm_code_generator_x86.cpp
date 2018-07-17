@@ -75,7 +75,7 @@ void* remod::details::asm_code_generator_x86::generator_call_conv_detour(detour_
 
 	// TODO: Check https://en.wikibooks.org/wiki/X86_Disassembly/Functions_and_Stack_Frames
 	// Then push the args 
-	asmjit::X86Mem push_ptr = asmjit::x86::dword_ptr(asmjit::x86::esp, 4);
+	asmjit::X86Mem push_ptr = asmjit::x86::dword_ptr(asmjit::x86::esp, stack_to_manage);
 	
 	for (int i = 0; i < stack_to_manage; i += 4)
 		a.push(push_ptr);

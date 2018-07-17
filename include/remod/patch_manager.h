@@ -26,8 +26,6 @@ namespace remod
 			std::uintptr_t addr = detour_point_to_apply.get_offset();
 			ResolveStrategy::resolve(addr, m_mod);
 
-			// std::function<Ret(Args...)> test_func;
-
 			// TODO: Create trackable_function_patch
 			trackable_function_patch<Ret(Args...)>* func_patch = new trackable_function_patch<Ret(Args...)>;
 			
@@ -50,12 +48,19 @@ namespace remod
 		patch_manager(const module& mod = remod::main_module) : m_mod(mod)
 		{}
 
-		template<typename Func>
-		auto apply(const detour_point& detour_point_to_apply, Func)
+		template<typename Ret, typename... Args>
+		auto apply(const detour_point& detour_point_to_apply, function_signature<Ret(Args...)>)
 		{
-			return apply_impl(detour_point_to_apply, details::function_traits<Func>{});
+			return apply_impl(detour_point_to_apply, details::function_traits<Ret(Args...)>{});
 		}
 
+		template<typename Func>
+		auto apply(const detour_point& detour_point_to_apply, Func func)
+		{
+			auto ret = apply(detour_point_to_apply, signature_from_function(func));
+			ret->add_detour_function(func);
+			return ret;
+		}
 
 	};
 }
