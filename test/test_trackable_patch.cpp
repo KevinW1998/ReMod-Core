@@ -39,12 +39,9 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 
 	// Test scoping
 	{
-		// Here apply the patch. my_trackable_patch is RAII protected, so if it gets
+		// Here apply the patch and add our detour function. my_trackable_patch is RAII protected, so if it gets
 		// out of scope, then it gets unpatched.
 		auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
-
-		// Now add our detour function. You can add multiple detour functions if you want.
-		my_trackable_patch->add_detour_function(calc_patch);
 
 		// Test if the patch is working
 		REQUIRE(calc_func_usage_example() == 21);
@@ -106,12 +103,12 @@ TEST_CASE("Test fastcall", "[remod-trackable-function-patch]")
 	my_detour.set_convention(remod::calling_convention::conv_fastcall);
 	my_detour.init_with_signature(calc_patch); // Here we init the args, which get passed by the caller
 
+	// Apply and add our detour function. You can add multiple detour functions if you want.
 	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
-
-	// Now add our detour function. You can add multiple detour functions if you want.
-	my_trackable_patch->add_detour_function(calc_patch);
 
 	REQUIRE(calc_sum_usage_example() == 2);
 }
+
+
 
 

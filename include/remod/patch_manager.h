@@ -51,10 +51,13 @@ namespace remod
 		{}
 
 		template<typename Func>
-		auto apply(const detour_point& detour_point_to_apply, Func)
+		auto apply(const detour_point& detour_point_to_apply, Func func)
 		{
-			return apply_impl(detour_point_to_apply, details::function_traits<Func>{});
+			auto ret = apply_impl(detour_point_to_apply, details::function_traits<Func>{});
+			ret->add_detour_function(func);
+			return ret;
 		}
+
 
 
 	};
