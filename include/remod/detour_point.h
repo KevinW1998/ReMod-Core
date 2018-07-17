@@ -34,7 +34,12 @@ namespace remod
 		detour_point(std::uintptr_t offset) : m_offset(offset) {}
 
 		template<typename Ret, typename... Args>
-		detour_point(std::uintptr_t offset, function_signature<Ret(Args...)> sig) : detour_point(offset) {
+		detour_point(std::uintptr_t offset, function_signature<Ret(Args...)> sig) : m_offset(offset) {
+			init_with_signature(sig);
+		}
+
+		template<typename Ret, typename... Args>
+		detour_point(std::uintptr_t offset, calling_convention conv, function_signature<Ret(Args...)> sig) : m_offset(offset), m_convention(conv) {
 			init_with_signature(sig);
 		}
 
