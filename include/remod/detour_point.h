@@ -33,15 +33,15 @@ namespace remod
 	public:
 		detour_point(std::uintptr_t offset) : m_offset(offset) {}
 
-		template<typename Func>
-		detour_point(std::uintptr_t offset, Func func) : detour_point(offset) {
-			init_with_signature(func);
+		template<typename Ret, typename... Args>
+		detour_point(std::uintptr_t offset, function_signature<Ret(Args...)> sig) : detour_point(offset) {
+			init_with_signature(sig);
 		}
 
-		template<typename FuncContainer>
-		void init_with_signature(FuncContainer func)
+		template<typename Ret, typename... Args>
+		void init_with_signature(function_signature<Ret(Args...)>)
 		{
-			using func_type = details::function_traits<FuncContainer>;
+			using func_type = details::function_traits<Ret(Args...)>;
 
 			static_assert(sizeof(func_type::result_type) <= sizeof(std::uintptr_t), "Size of the return value must be equal or smaller than a processor register size");
 
