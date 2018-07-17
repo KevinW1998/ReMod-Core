@@ -17,7 +17,7 @@ void remod::details::asm_code_generator_x86::validate_args_by_call_conv(const st
 				throw std::runtime_error("First fastcall argument must be equal or smaller than 4 bytes");
 			}
 		}
-		else if(num_of_args >= 2)
+		if (num_of_args >= 2)
 		{
 			if (arg_sizes[1] > 4)
 			{
@@ -25,9 +25,9 @@ void remod::details::asm_code_generator_x86::validate_args_by_call_conv(const st
 			}
 		}
 	} 
-	else if(call_conv == calling_convention::conv_thiscall)
+	else if (call_conv == calling_convention::conv_thiscall)
 	{
-		if(num_of_args >= 1)
+		if (num_of_args >= 1)
 		{
 			if (arg_sizes[0] > 4)
 			{

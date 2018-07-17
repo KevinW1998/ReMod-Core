@@ -2,7 +2,6 @@
 #include <remod/platform_detection.h>
 #include "remod_test_utils.h"
 #include "remod/patch_manager.h"
-#include "remod/win32/resolve_strategy_win32.h"
 #include "remod/resolve_strategy.h"
 
 
@@ -159,6 +158,58 @@ TEST_CASE("Test stdcall", "[remod-trackable-function-patch]")
 
 	REQUIRE(calc_sub_usage_example() == 5);
 }
+
+struct big_example_struct
+{
+	int a;
+	float b;
+	short c;
+};
+
+int REMOD_NOINLINE __cdecl consume_big_example_struct(int some_val_1, big_example_struct data, int some_val_2)
+{
+	return data.a + static_cast<int>(data.b * 100.f) + data.c + (some_val_1 * some_val_2);
+}
+
+int REMOD_NOINLINE use_big_example_struct_function()
+{
+	// 20 + (0.5 * 100) + 10 + (10 * 5)
+	// 20 + 50 + 10 + 50 = 130
+	return consume_big_example_struct(10, { 20, 0.5f, 10 }, 5); 
+}
+
+
+TEST_CASE("Test with big struct", "[remod-trackable-function-patch]")
+{
+	REQUIRE(use_big_example_struct_function() == 130);
+
+	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&use_big_example_struct_function));
+
+	auto calc_patch = [](int some_val_1, big_example_struct data, int some_val_2) -> int
+	{
+		// 20 + (0.5 * 10) - 10 + (10 / 5)
+		// 20 + 5 - 10 + 2 = 17
+		return data.a + static_cast<int>(data.b * 10.f) - data.c + (some_val_1 / some_val_2);
+	};
+
+	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
+	auto my_trackable_patch = my_patch_manager.apply({ to_patch , remod::signature_from_function(calc_patch) }, calc_patch);
+
+	REQUIRE(use_big_example_struct_function() == 17);
+}
+
+TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-patch]")
+{
+	// Just use any function
+	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&use_big_example_struct_function));
+
+	remod::function_signature<int(int, big_example_struct, int)> invalid_sig;
+
+	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
+	REQUIRE_THROWS_WITH(my_patch_manager.apply({ to_patch , remod::calling_convention::conv_fastcall, invalid_sig }, invalid_sig), "Second fastcall argument must be equal or smaller than 4 bytes");
+}
+
+
 
 
 

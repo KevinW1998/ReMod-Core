@@ -32,5 +32,5 @@ void* remod::test_utils::resolve_if_jmp_stub(void* func)
 
 std::uintptr_t remod::test_utils::find_call_small_func(void* start)
 {
-	return reinterpret_cast<std::uintptr_t>(remod::test_utils::find_call_E8(remod::test_utils::resolve_if_jmp_stub(start), 30));
+	return reinterpret_cast<std::uintptr_t>(remod::test_utils::find_call_E8(remod::test_utils::resolve_if_jmp_stub(start), 100));
 }
