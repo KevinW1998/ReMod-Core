@@ -23,6 +23,7 @@
       * before_detours
       * after_detours
       * no_original_call
+* Implement custom calling conventions
 * Create global_data container class [DONE]
 * typedefed asm_code_generator 
    * Create class base_asm_code_generator?
