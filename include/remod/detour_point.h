@@ -23,6 +23,7 @@ namespace remod
 		registers m_return_register = registers::eax;
 		return_value_source m_ret_val_source = return_value_source::first_detour_function;
 		original_function_call m_orig_func_call = original_function_call::after_detours;
+		std::uint32_t m_caller_stack_size = 0;
 
 		template<std::size_t... Ints>
 		void init_by_index_seq(std::index_sequence<Ints...>)
@@ -108,6 +109,10 @@ namespace remod
 			m_orig_func_call = original_function_call;
 		}
 
+		void set_caller_stack_size(std::uint32_t caller_stack_size)
+		{
+			m_caller_stack_size = 0;
+		}
 	};
 }
 
