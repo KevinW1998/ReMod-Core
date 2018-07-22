@@ -211,5 +211,30 @@ TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-pat
 
 
 
+TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
+{
+	void* stack_tmp = nullptr;
+	std::intptr_t main_stack_loc = reinterpret_cast<std::intptr_t>(&stack_tmp);
 
+	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&sub_val));
+
+	// This is the patch manager, holding all patches
+	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
+
+	auto calc_patch = [main_stack_loc](int func_stack_loc, int a, int b)
+	{
+		REQUIRE(main_stack_loc >= func_stack_loc); // Stack pointer should have shrunk
+		return a + b;
+	};
+
+	remod::detour_point my_detour(to_patch);
+	my_detour.set_convention(remod::calling_convention::conv_stdcall);
+	my_detour.add_argument<int>(); // arg b
+	my_detour.add_argument<int>(); // arg a
+	my_detour.add_capture(remod::register_capture(remod::registers::esp));
+
+	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
+
+	REQUIRE(calc_sub_usage_example() == 5);
+}
 

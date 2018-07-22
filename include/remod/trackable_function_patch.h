@@ -33,7 +33,7 @@ namespace remod
 				rValOrig = details::call_by_convetion<Ret, Args...>(m_call_conv, m_orig_func, args...);
 
 			Ret rValDetour{};
-			if (m_detour_functions.size() > 0u)
+			if (!m_detour_functions.empty())
 			{
 				rValDetour = m_detour_functions[0](args...);
 				for (int i = 1; i < m_detour_functions.size(); i++)

@@ -9,10 +9,14 @@ namespace remod::details
 	{
 	public:
 
-		// Stable API:
 		void validate_args_by_call_conv(const std::vector<std::size_t>& arg_sizes, calling_convention call_conv);
 		void generate_call_conv_prologue(asmjit::X86Assembler& assembler, calling_convention source_call_conv, int arg_num);
-		void* generator_call_conv_detour(detour_point to_convert, void* context_value, void* func_to_call);
+		asmjit::X86Gp convert_remod_register(registers reg);
+
+		
+		// Stable API:
+		std::intptr_t generator_call_conv_detour(const detour_point& to_convert, std::intptr_t context_value, std::intptr_t func_to_call);
+		std::intptr_t generate_orig_func_wrapper(const detour_point& to_convert, std::intptr_t func_to_call);
 	};
 }
 

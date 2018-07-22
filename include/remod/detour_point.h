@@ -54,6 +54,12 @@ namespace remod
 			init_by_index_seq(func_type::arg_sizes());
 		}
 
+		template<typename T>
+		void add_argument()
+		{
+			m_args_captures.push_back(sizeof(T));
+		}
+
 		void add_capture(const capture_variant_t& capture)
 		{
 			m_extra_captures.push_back(capture);
@@ -113,6 +119,17 @@ namespace remod
 		{
 			m_caller_stack_size = 0;
 		}
+
+		const std::vector<capture_variant_t>& get_captures() const
+		{
+			return m_extra_captures;
+		}
+
+		bool has_captures() const
+		{
+			return !m_extra_captures.empty();
+		}
+
 	};
 }
 

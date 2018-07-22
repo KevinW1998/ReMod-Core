@@ -2,7 +2,7 @@
 
 namespace remod
 {
-	enum class registers
+	enum class registers : std::uint32_t
 	{
 		// 8-bit
 		ah,
@@ -47,6 +47,11 @@ namespace remod
 		rdi,
 		rip
 	};
+
+	inline bool is_x64_register(registers reg)
+	{
+		return reg >= registers::rax;
+	}
 }
 
 

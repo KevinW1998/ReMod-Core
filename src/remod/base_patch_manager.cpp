@@ -18,7 +18,7 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 	patch_engine::read(addr_for_patch, &buf_bytes, 10u);
 
 
-	std::uintptr_t orig_addr = 0;
+	std::intptr_t orig_addr = 0;
 	
 	// Currently we only support relative call patches
 	if (buf_bytes[0] == 0xE8)
@@ -31,16 +31,21 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 	}
 
 	// Create stub
-	void* func_stub = m_generator->generator_call_conv_detour(detour_point_to_apply, reinterpret_cast<void*>(patch), proxy);
+	std::intptr_t func_stub = m_generator->generator_call_conv_detour(detour_point_to_apply, reinterpret_cast<std::intptr_t>(patch), reinterpret_cast<std::intptr_t>(proxy));
 
 	// calculate relative address
-	std::int32_t rel_func_stub_addr = reinterpret_cast<std::int32_t>(func_stub) - addr_for_patch - 5;
+	std::int32_t rel_func_stub_addr = func_stub - addr_for_patch - 5;
 	memcpy(&buf_bytes[1], &rel_func_stub_addr, sizeof(std::int32_t));
 
 	// TODO: Move to trackable_patch
 	// patch CALL-Instruction
 	patch->set_data(addr_for_patch, { buf_bytes, buf_bytes + (1 + sizeof(std::int32_t)) });
-	patch->set_original_function(reinterpret_cast<void*>(orig_addr));
 	patch->set_calling_convention(detour_point_to_apply.get_calling_convention());
-	
+
+	// Wrap original function if needed
+	orig_addr = detour_point_to_apply.has_captures() ? 
+		m_generator->generate_orig_func_wrapper(detour_point_to_apply, orig_addr) : orig_addr;
+	patch->set_original_function(reinterpret_cast<void*>(orig_addr));
+
+
 }
