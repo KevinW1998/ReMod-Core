@@ -1,32 +1,25 @@
 #pragma once
 
 #include "common.h"
-#include <vector>
 
 namespace remod
 {
 	class REMOD_CORE_EXPORT trackable_patch
 	{
-	friend class base_patch_manager;
-		std::uintptr_t m_patch_ptr = 0;
-		std::vector<std::uint8_t> m_data;
-		std::vector<std::uint8_t> m_orig_data;
 		bool m_is_patched = false;
 	protected:
-		void set_data(std::uintptr_t patch_ptr, std::vector<std::uint8_t>&& data);
 		trackable_patch() = default;
-
 	public:
-		trackable_patch(std::uintptr_t patch_ptr, const std::vector<std::uint8_t>& data);
-		trackable_patch(std::uintptr_t patch_ptr, std::vector<std::uint8_t>&& data);
-
 		trackable_patch(const trackable_patch& other) = delete;
 		trackable_patch(trackable_patch&& other) = delete;
 		trackable_patch& operator=(const trackable_patch& other) = delete;
 		trackable_patch& operator=(trackable_patch&& other) noexcept = delete;
 
+		bool is_patched() const;
+
 		virtual ~trackable_patch();
 
+		// TODO: Move virtual to protected and use wrapper with bool is_patched-guards
 		// TODO: Use trackable_patch
 		virtual void patch();
 		virtual void unpatch();

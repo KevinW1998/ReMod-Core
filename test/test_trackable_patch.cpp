@@ -210,7 +210,7 @@ TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-pat
 }
 
 
-
+/*
 TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
 {
 	void* stack_tmp = nullptr;
@@ -237,4 +237,6 @@ TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
 
 	REQUIRE(calc_sub_usage_example() == 5);
 }
+
+*/
 
