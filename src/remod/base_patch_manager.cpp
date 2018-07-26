@@ -39,7 +39,8 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 
 	// TODO: Move to trackable_patch
 	// on_patch CALL-Instruction
-	patch->set_data(addr_for_patch, { buf_bytes, buf_bytes + (1 + sizeof(std::int32_t)) });
+	patch->set_patch_pointer(addr_for_patch);
+	patch->set_data({ buf_bytes, buf_bytes + (1 + sizeof(std::int32_t)) });
 	patch->set_calling_convention(detour_point_to_apply.get_calling_convention());
 
 	// Wrap original function if needed
