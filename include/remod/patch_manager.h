@@ -38,7 +38,7 @@ namespace remod
 				return (*patch)(args...);
 			};			
 			
-			// Generate the patch and apply the patch
+			// Generate the on_patch and apply the on_patch
 			generate_function_patch(addr, func_patch, reinterpret_cast<void*>(proxy), detour_point_to_apply);
 			func_patch->patch();
 			

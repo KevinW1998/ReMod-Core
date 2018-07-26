@@ -27,8 +27,8 @@ namespace remod
 		virtual ~trackable_memory_patch_base();
 
 		// TODO: Use trackable_patch
-		virtual void patch();
-		virtual void unpatch();
+		virtual void on_patch();
+		virtual void on_unpatch();
 	};
 }
 

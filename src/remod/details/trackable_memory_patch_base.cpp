@@ -5,7 +5,7 @@
 void remod::trackable_memory_patch_base::set_data(std::uintptr_t patch_ptr, std::vector<std::uint8_t>&& data)
 {
 	if (is_patched())
-		throw std::runtime_error("Cannot set data if patch is active");
+		throw std::runtime_error("Cannot set data if on_patch is active");
 
 	m_patch_ptr = patch_ptr;
 	m_data = std::move(data);
@@ -27,28 +27,18 @@ remod::trackable_memory_patch_base::trackable_memory_patch_base(std::uintptr_t p
 remod::trackable_memory_patch_base::~trackable_memory_patch_base()
 {
 	if (is_patched())
-		trackable_memory_patch_base::unpatch();
+		trackable_memory_patch_base::on_unpatch();
 }
 
-void remod::trackable_memory_patch_base::patch()
+void remod::trackable_memory_patch_base::on_patch()
 {
-	if (is_patched())
-		return;
-
 	patch_engine::read(m_patch_ptr, reinterpret_cast<void*>(&m_orig_data[0]), m_orig_data.size());
 	patch_engine::write(m_patch_ptr, reinterpret_cast<void*>(&m_data[0]), m_data.size());
-
-	trackable_patch::patch();
 }
 
-void remod::trackable_memory_patch_base::unpatch()
+void remod::trackable_memory_patch_base::on_unpatch()
 {
-	if (!is_patched())
-		return;
-
 	patch_engine::write(m_patch_ptr, reinterpret_cast<void*>(&m_orig_data[0]), m_orig_data.size());
-
-	trackable_patch::unpatch();
 }
 
 

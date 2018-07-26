@@ -9,6 +9,9 @@ namespace remod
 		bool m_is_patched = false;
 	protected:
 		trackable_patch() = default;
+
+		virtual void on_patch() = 0;
+		virtual void on_unpatch() = 0;
 	public:
 		trackable_patch(const trackable_patch& other) = delete;
 		trackable_patch(trackable_patch&& other) = delete;
@@ -17,12 +20,12 @@ namespace remod
 
 		bool is_patched() const;
 
-		virtual ~trackable_patch();
+		virtual ~trackable_patch() = default;
 
 		// TODO: Move virtual to protected and use wrapper with bool is_patched-guards
 		// TODO: Use trackable_patch
-		virtual void patch();
-		virtual void unpatch();
+		void patch();
+		void unpatch();
 	};
 }
 

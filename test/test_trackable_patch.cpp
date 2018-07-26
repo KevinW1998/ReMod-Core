@@ -17,13 +17,13 @@ int REMOD_NOINLINE calc_func_usage_example()
 }
 
 
-TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function-patch]")
+TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function-on_patch]")
 {	
 	REQUIRE(calc_func_usage_example() == 101);
 
 	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&calc_func_usage_example));
 
-	// This is the patch manager, holding all patches
+	// This is the on_patch manager, holding all patches
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 
 	// A stateful-lambda wrapped in std::function
@@ -34,20 +34,20 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 
 	// Test scoping
 	{
-		// Here apply the patch and add our detour function. my_trackable_patch is RAII protected, so if it gets
+		// Here apply the on_patch and add our detour function. my_trackable_patch is RAII protected, so if it gets
 		// out of scope, then it gets unpatched.
 		auto my_trackable_patch = my_patch_manager.apply({ to_patch , remod::signature_from_function(calc_patch) } , calc_patch);
 
-		// Test if the patch is working
+		// Test if the on_patch is working
 		REQUIRE(calc_func_usage_example() == 21);
 
 
 		// Now try unpatching
-		my_trackable_patch->unpatch();
+		my_trackable_patch->on_unpatch();
 		REQUIRE(calc_func_usage_example() == 101);
 
 		// Now try repatching
-		my_trackable_patch->patch();
+		my_trackable_patch->on_patch();
 		REQUIRE(calc_func_usage_example() == 21);
 
 		// Now try getting the return value from source
@@ -69,7 +69,7 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 	REQUIRE(calc_func_usage_example() == 101);
 }
 
-TEST_CASE("Test without adding detour", "[remod-trackable-function-patch]")
+TEST_CASE("Test without adding detour", "[remod-trackable-function-on_patch]")
 {
 	REQUIRE(calc_func_usage_example() == 101);
 
@@ -99,7 +99,7 @@ int REMOD_NOINLINE calc_sum_usage_example()
 	return sum_val(3, 2, 1);
 }
 
-TEST_CASE("Test fastcall", "[remod-trackable-function-patch]")
+TEST_CASE("Test fastcall", "[remod-trackable-function-on_patch]")
 {
 	REQUIRE(calc_sum_usage_example() == 6);
 
@@ -110,10 +110,10 @@ TEST_CASE("Test fastcall", "[remod-trackable-function-patch]")
 		return a - b + c;
 	};
 
-	// This is the patch manager, holding all patches
+	// This is the on_patch manager, holding all patches
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 
-	// detour_point represents the preparation of the patch (here you can defined additional captures, like getting variables from the callers stack)
+	// detour_point represents the preparation of the on_patch (here you can defined additional captures, like getting variables from the callers stack)
 	remod::detour_point my_detour(to_patch);
 	my_detour.set_convention(remod::calling_convention::conv_fastcall);
 	my_detour.init_with_signature(remod::signature_from_function(calc_patch)); // Here we init the args, which get passed by the caller
@@ -134,7 +134,7 @@ int REMOD_NOINLINE calc_sub_usage_example()
 	return sub_val(3, 2);
 }
 
-TEST_CASE("Test stdcall", "[remod-trackable-function-patch]")
+TEST_CASE("Test stdcall", "[remod-trackable-function-on_patch]")
 {
 	REQUIRE(calc_sub_usage_example() == 1);
 
@@ -145,10 +145,10 @@ TEST_CASE("Test stdcall", "[remod-trackable-function-patch]")
 		return a + b;
 	};
 
-	// This is the patch manager, holding all patches
+	// This is the on_patch manager, holding all patches
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 
-	// detour_point represents the preparation of the patch (here you can defined additional captures, like getting variables from the callers stack)
+	// detour_point represents the preparation of the on_patch (here you can defined additional captures, like getting variables from the callers stack)
 	remod::detour_point my_detour(to_patch);
 	my_detour.set_convention(remod::calling_convention::conv_stdcall);
 	my_detour.init_with_signature(remod::signature_from_function(calc_patch)); // Here we init the args, which get passed by the caller
@@ -179,7 +179,7 @@ int REMOD_NOINLINE use_big_example_struct_function()
 }
 
 
-TEST_CASE("Test with big struct", "[remod-trackable-function-patch]")
+TEST_CASE("Test with big struct", "[remod-trackable-function-on_patch]")
 {
 	REQUIRE(use_big_example_struct_function() == 130);
 
@@ -198,7 +198,7 @@ TEST_CASE("Test with big struct", "[remod-trackable-function-patch]")
 	REQUIRE(use_big_example_struct_function() == 17);
 }
 
-TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-patch]")
+TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-on_patch]")
 {
 	// Just use any function
 	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&use_big_example_struct_function));
@@ -211,14 +211,14 @@ TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-pat
 
 
 /*
-TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
+TEST_CASE("Test with register capture", "[remod-trackable-function-on_patch]")
 {
 	void* stack_tmp = nullptr;
 	std::intptr_t main_stack_loc = reinterpret_cast<std::intptr_t>(&stack_tmp);
 
 	auto to_patch = remod::test_utils::find_call_small_func(reinterpret_cast<void*>(&sub_val));
 
-	// This is the patch manager, holding all patches
+	// This is the on_patch manager, holding all patches
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 
 	auto calc_patch = [main_stack_loc](int func_stack_loc, int a, int b)

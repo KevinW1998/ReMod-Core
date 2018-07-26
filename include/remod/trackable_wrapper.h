@@ -7,7 +7,7 @@
 namespace remod
 {
 	/**
-	 * \brief A smart pointer, which manages the lifetime of a patch (unless it is detached). 
+	 * \brief A smart pointer, which manages the lifetime of a on_patch (unless it is detached). 
 	 * \tparam T Concrete type of trackable_patch. T must be trackable_patch or a derived class of it
 	 */
 	template<typename T>
