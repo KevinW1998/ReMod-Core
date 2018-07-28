@@ -45,7 +45,7 @@ void remod::win32::patch_engine_win32::read(std::uintptr_t ptr, void* data, std:
 	if (size <= 0u)
 		return;
 
-	win32_virtual_protect raii_protect(ptr, size, PAGE_EXECUTE_READ);
+	win32_virtual_protect raii_protect(ptr, size, PAGE_EXECUTE_READWRITE);
 
 	memcpy(data, reinterpret_cast<void*>(ptr), size);
 }

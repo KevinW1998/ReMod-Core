@@ -5,14 +5,22 @@
 void remod::trackable_memory_patch_base::ensure_unpatched() const
 {
 	if (is_patched())
-		throw std::runtime_error("Cannot set data if on_patch is active");
+		throw std::runtime_error("Cannot set data if patch is active");
 }
 
-void remod::trackable_memory_patch_base::set_patch_pointer(std::uintptr_t patch_ptr)
+void remod::trackable_memory_patch_base::set_pointer(std::uintptr_t patch_ptr)
 {
 	ensure_unpatched();
 
 	m_patch_ptr = patch_ptr;
+}
+
+void remod::trackable_memory_patch_base::set_data(const std::vector<std::uint8_t>& data)
+{
+	ensure_unpatched();
+
+	m_data = data;
+	m_orig_data = std::vector<std::uint8_t>(m_data.size(), '\0');
 }
 
 void remod::trackable_memory_patch_base::set_data(std::vector<std::uint8_t>&& data)

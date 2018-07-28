@@ -15,7 +15,8 @@ namespace remod
 		void ensure_unpatched() const;
 
 	protected:
-		void set_patch_pointer(std::uintptr_t patch_ptr);
+		void set_pointer(std::uintptr_t patch_ptr);
+		void set_data(const std::vector<std::uint8_t>& data);
 		void set_data(std::vector<std::uint8_t>&& data);
 		trackable_memory_patch_base() = default;
 

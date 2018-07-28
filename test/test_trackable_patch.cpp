@@ -17,7 +17,7 @@ int REMOD_NOINLINE calc_func_usage_example()
 }
 
 
-TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function-on_patch]")
+TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function-patch]")
 {	
 	REQUIRE(calc_func_usage_example() == 101);
 
@@ -36,7 +36,7 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 	{
 		// Here apply the on_patch and add our detour function. my_trackable_patch is RAII protected, so if it gets
 		// out of scope, then it gets unpatched.
-		auto my_trackable_patch = my_patch_manager.apply({ to_patch , remod::signature_from_function(calc_patch) } , calc_patch);
+		auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch({ to_patch , remod::signature_from_function(calc_patch) } , calc_patch);
 
 		// Test if the on_patch is working
 		REQUIRE(calc_func_usage_example() == 21);
@@ -69,7 +69,7 @@ TEST_CASE("Test trackable_function_patch in general", "[remod-trackable-function
 	REQUIRE(calc_func_usage_example() == 101);
 }
 
-TEST_CASE("Test without adding detour", "[remod-trackable-function-on_patch]")
+TEST_CASE("Test without adding detour", "[remod-trackable-function-patch]")
 {
 	REQUIRE(calc_func_usage_example() == 101);
 
@@ -82,7 +82,7 @@ TEST_CASE("Test without adding detour", "[remod-trackable-function-on_patch]")
 		return value * 2;
 	};
 
-	auto my_trackable_patch = my_patch_manager.apply({ to_patch , remod::signature_from_function(calc_patch) }, remod::signature_from_function(calc_patch));
+	auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch({ to_patch , remod::signature_from_function(calc_patch) }, remod::signature_from_function(calc_patch));
 
 	// Returns 1 because there is no detour function installed
 	REQUIRE(calc_func_usage_example() == 1);
@@ -99,7 +99,7 @@ int REMOD_NOINLINE calc_sum_usage_example()
 	return sum_val(3, 2, 1);
 }
 
-TEST_CASE("Test fastcall", "[remod-trackable-function-on_patch]")
+TEST_CASE("Test fastcall", "[remod-trackable-function-patch]")
 {
 	REQUIRE(calc_sum_usage_example() == 6);
 
@@ -119,7 +119,7 @@ TEST_CASE("Test fastcall", "[remod-trackable-function-on_patch]")
 	my_detour.init_with_signature(remod::signature_from_function(calc_patch)); // Here we init the args, which get passed by the caller
 
 	// Apply and add our detour function. You can add multiple detour functions if you want.
-	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
+	auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch(my_detour, calc_patch);
 
 	REQUIRE(calc_sum_usage_example() == 2);
 }
@@ -134,7 +134,7 @@ int REMOD_NOINLINE calc_sub_usage_example()
 	return sub_val(3, 2);
 }
 
-TEST_CASE("Test stdcall", "[remod-trackable-function-on_patch]")
+TEST_CASE("Test stdcall", "[remod-trackable-function-patch]")
 {
 	REQUIRE(calc_sub_usage_example() == 1);
 
@@ -154,7 +154,7 @@ TEST_CASE("Test stdcall", "[remod-trackable-function-on_patch]")
 	my_detour.init_with_signature(remod::signature_from_function(calc_patch)); // Here we init the args, which get passed by the caller
 
 	// Apply and add our detour function. You can add multiple detour functions if you want.
-	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
+	auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch(my_detour, calc_patch);
 
 	REQUIRE(calc_sub_usage_example() == 5);
 }
@@ -179,7 +179,7 @@ int REMOD_NOINLINE use_big_example_struct_function()
 }
 
 
-TEST_CASE("Test with big struct", "[remod-trackable-function-on_patch]")
+TEST_CASE("Test with big struct", "[remod-trackable-function-patch]")
 {
 	REQUIRE(use_big_example_struct_function() == 130);
 
@@ -193,7 +193,7 @@ TEST_CASE("Test with big struct", "[remod-trackable-function-on_patch]")
 	};
 
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
-	auto my_trackable_patch = my_patch_manager.apply({ to_patch , remod::signature_from_function(calc_patch) }, calc_patch);
+	auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch({ to_patch , remod::signature_from_function(calc_patch) }, calc_patch);
 
 	REQUIRE(use_big_example_struct_function() == 17);
 }
@@ -206,12 +206,12 @@ TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-on_
 	remod::function_signature<int(int, big_example_struct, int)> invalid_sig;
 
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
-	REQUIRE_THROWS_WITH(my_patch_manager.apply({ to_patch , remod::calling_convention::conv_fastcall, invalid_sig }, invalid_sig), "Second fastcall argument must be equal or smaller than 4 bytes");
+	REQUIRE_THROWS_WITH(my_patch_manager.apply_trackable_function_patch({ to_patch , remod::calling_convention::conv_fastcall, invalid_sig }, invalid_sig), "Second fastcall argument must be equal or smaller than 4 bytes");
 }
 
 
 /*
-TEST_CASE("Test with register capture", "[remod-trackable-function-on_patch]")
+TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
 {
 	void* stack_tmp = nullptr;
 	std::intptr_t main_stack_loc = reinterpret_cast<std::intptr_t>(&stack_tmp);
@@ -233,7 +233,7 @@ TEST_CASE("Test with register capture", "[remod-trackable-function-on_patch]")
 	my_detour.add_argument<int>(); // arg a
 	my_detour.add_capture(remod::register_capture(remod::registers::esp));
 
-	auto my_trackable_patch = my_patch_manager.apply(my_detour, calc_patch);
+	auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch(my_detour, calc_patch);
 
 	REQUIRE(calc_sub_usage_example() == 5);
 }
