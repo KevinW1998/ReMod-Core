@@ -32,5 +32,6 @@
 * Setup standases for documentation
 * Setup asmjit [DONE]
 * Add template classes for wrapping registers eax<int>, ecx<int>, ect...
-* Add template function container: T<Ret(Args...)>
+* Add template function container: T<Ret(Args...)> [DONE]
+* Create global_data_reference.h
 
