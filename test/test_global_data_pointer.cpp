@@ -4,7 +4,7 @@
 
 
 // Original targets for data tests
-struct test_struct
+struct test_struct_for_data_pointer
 {
 	int a;
 	int b;
@@ -22,21 +22,21 @@ struct test_struct
 };
 
 
-test_struct global_value_for_ptr_no_resolve = { 4, 4 };
-test_struct global_value_for_ptr_win32_resolve = { 6, 6 };
+test_struct_for_data_pointer global_value_for_ptr_no_resolve = { 4, 4 };
+test_struct_for_data_pointer global_value_for_ptr_win32_resolve = { 6, 6 };
 
-test_struct* global_value_ptr_no_resolve = &global_value_for_ptr_no_resolve;
-test_struct* global_value_ptr_win32_resolve = &global_value_for_ptr_win32_resolve;
+test_struct_for_data_pointer* global_value_ptr_no_resolve = &global_value_for_ptr_no_resolve;
+test_struct_for_data_pointer* global_value_ptr_win32_resolve = &global_value_for_ptr_win32_resolve;
 
 
 
 // The actual tests below:
 
-remod::global_data_pointer_no_resolve<test_struct> global_value_no_resolve{
+remod::global_data_pointer_no_resolve<test_struct_for_data_pointer> global_value_no_resolve{
 	reinterpret_cast<std::uintptr_t>(&global_value_ptr_no_resolve)
 };
 
-TEST_CASE("Test global data pointer without resolve", "[remod-global-data]")
+TEST_CASE("Test global data without resolve", "[remod-global-pointer-data]")
 {
 	remod::resolve_all();
 
@@ -60,12 +60,12 @@ TEST_CASE("Test global data pointer without resolve", "[remod-global-data]")
 
 #include <windows.h>
 
-remod::global_data_pointer_win32<test_struct> global_value_win32 {
+remod::global_data_pointer_win32<test_struct_for_data_pointer> global_value_win32 {
 	reinterpret_cast<std::uintptr_t>(&global_value_ptr_win32_resolve) - reinterpret_cast<std::uintptr_t>(
 		GetModuleHandle(nullptr))
 };
 
-TEST_CASE("Test global data pointer with win32 resolve", "[remod-global-data]")
+TEST_CASE("Test global data with win32 resolve", "[remod-global-pointer-data]")
 {
 	remod::resolve_all();
 
