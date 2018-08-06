@@ -7,7 +7,7 @@
    * patch
    * unpatch
 * Create trackable_function_patch<T(...)> class : trackable_patch [DONE]
-   * function add_function
+   * function add_function [DONE]
 * Create detour_point class with:
    * constructor with single offset [DONE]
    * stack-capture
@@ -24,6 +24,7 @@
       * after_detours
       * no_original_call
 * Implement custom calling conventions
+* Create trackable_light_function_patch<T(...)> class --> uses global storage for lambda
 * Create global_data container class [DONE]
 * typedefed asm_code_generator 
    * Create class base_asm_code_generator?
