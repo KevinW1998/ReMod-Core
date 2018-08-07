@@ -56,7 +56,7 @@ TEST_CASE("Test global data pointer without resolve", "[remod-global-data]")
 
 #include <windows.h>
 
-remod::global_data_pointer_win32<test_struct_for_data> global_value_win32 {
+remod::global_data_win32<test_struct_for_data> global_value_win32 {
 	reinterpret_cast<std::uintptr_t>(&global_value_for_win32_resolve) - reinterpret_cast<std::uintptr_t>(
 		GetModuleHandle(nullptr))
 };
@@ -66,7 +66,7 @@ TEST_CASE("Test global data pointer with win32 resolve", "[remod-global-data]")
 	remod::resolve_all();
 
 
-	test_struct_for_data& global_val_ref = global_value_no_resolve.get_ref();
+	test_struct_for_data& global_val_ref = global_value_win32.get_ref();
 	REQUIRE(global_val_ref.a == 6);
 	REQUIRE(global_val_ref.b == 6);
 
