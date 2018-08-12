@@ -18,6 +18,10 @@ namespace remod
 
 	template<calling_convention Conv, typename T>
 	using global_function_pointer_win32 = global_function_pointer<Conv, win32::resolve_strategy_module_handle, T>;
+
+	using global_string_win32 = global_string<win32::resolve_strategy_module_handle>;
+
+	using global_wstring_win32 = global_wstring<win32::resolve_strategy_module_handle>;
 }
 
 
