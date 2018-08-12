@@ -117,7 +117,7 @@ namespace remod
 
 		void set_caller_stack_size(std::uint32_t caller_stack_size)
 		{
-			m_caller_stack_size = 0;
+			m_caller_stack_size = caller_stack_size;
 		}
 
 		const std::vector<capture_variant_t>& get_captures() const

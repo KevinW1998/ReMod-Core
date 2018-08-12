@@ -45,7 +45,7 @@ namespace remod
 			return { get_patch_store(), func_patch };
 		}
 	public:
-		patch_manager(const module& mod = remod::main_module) : m_mod(mod)
+		patch_manager(const module& mod = remod::main_module) noexcept : m_mod(mod)
 		{}
 
 		template<typename Ret, typename... Args>
