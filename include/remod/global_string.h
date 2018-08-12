@@ -23,6 +23,11 @@ namespace remod
 			return std::basic_string_view<CharT>(reinterpret_cast<CharT*>(get_pointer()));
 		}
 
+		const CharT* get_raw()
+		{
+			return reinterpret_cast<CharT*>(get_pointer());
+		}
+
 	};
 
 	template<typename ResolveStrategy>
