@@ -75,12 +75,16 @@ namespace remod
 		void write_memory(std::uintptr_t offset, T value) {
 			static_assert(std::is_pod_v<T>, "Only pod types are supported for memory writes");
 
+			ResolveStrategy::resolve(offset, m_mod);
+
 			write_memory_data(offset, &value, sizeof(T));
 		}
 
 		template<typename T>
 		T read_memory(std::uintptr_t offset) {
 			static_assert(std::is_pod_v<T>, "Only pod types are supported for memory reads");
+
+			ResolveStrategy::resolve(offset, m_mod);
 
 			T out;
 			read_memory_data(offset, &out, sizeof(T));
