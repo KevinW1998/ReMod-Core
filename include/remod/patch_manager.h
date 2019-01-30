@@ -71,6 +71,21 @@ namespace remod
 			return { patch_store, mem_patch };
 		}
 
+		template<typename T>
+		void write_memory(std::uintptr_t offset, T value) {
+			static_assert(std::is_pod_v<T>, "Only pod types are supported for memory writes");
+
+			write_memory_data(offset, &value, sizeof(T));
+		}
+
+		template<typename T>
+		T read_memory(std::uintptr_t offset) {
+			static_assert(std::is_pod_v<T>, "Only pod types are supported for memory reads");
+
+			T out;
+			read_memory_data(offset, &out, sizeof(T));
+			return out;
+		}
 	};
 }
 

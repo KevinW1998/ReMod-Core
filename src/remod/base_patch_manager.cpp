@@ -50,3 +50,13 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 
 
 }
+
+void remod::base_patch_manager::write_memory_data(std::uintptr_t offset, void * data, int len)
+{
+	patch_engine::write(offset, data, len);
+}
+
+void remod::base_patch_manager::read_memory_data(std::uintptr_t offset, void * data, int len)
+{
+	patch_engine::read(offset, data, len);
+}

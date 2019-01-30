@@ -26,6 +26,8 @@ namespace remod
 
 		void generate_function_patch(std::uintptr_t addr_for_patch, trackable_function_patch_base* patch, void* proxy, const detour_point& detour_point_to_apply);
 
+		void write_memory_data(std::uintptr_t offset, void* data, int len);
+		void read_memory_data(std::uintptr_t offset, void* data, int len);
 	};
 }
 
