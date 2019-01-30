@@ -19,6 +19,7 @@ namespace remod
 	public:
 		static_assert(std::is_base_of_v<trackable_patch, T> || std::is_same_v<trackable_patch, T>, "T must be trackable_patch");
 
+		trackable_wrapper() : m_internal_store(nullptr), m_trackable_ptr(nullptr) {}
 		trackable_wrapper(details::patch_store* internal_store, T* trackable_ptr) : m_internal_store(internal_store), m_trackable_ptr(trackable_ptr) {}
 		~trackable_wrapper()
 		{
