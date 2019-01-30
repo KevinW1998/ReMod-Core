@@ -72,6 +72,18 @@ namespace remod
 		}
 
 		template<typename T>
+		trackable_wrapper<trackable_memory_patch> create_trackable_memory_patch(std::uintptr_t pointer, T value)
+		{
+			static_assert(std::is_pod_v<T>, "Only pod types are supported for memory patches");
+
+			trackable_wrapper<trackable_memory_patch> wrapper = create_trackable_memory_patch();
+			wrapper->set_patch_pointer(pointer);
+			wrapper->set_as_binary_data(value);
+
+			return wrapper;
+		}
+
+		template<typename T>
 		void write_memory(std::uintptr_t offset, T value) {
 			static_assert(std::is_pod_v<T>, "Only pod types are supported for memory writes");
 
