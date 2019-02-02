@@ -63,6 +63,9 @@ install(TARGETS ReModCore
 install(DIRECTORY ../include/remod
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+install(FILES ../include/remod.h
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
 
 install(EXPORT ReModCore-targets
     FILE ReModCore-targets.cmake
