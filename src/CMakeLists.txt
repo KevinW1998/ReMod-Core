@@ -66,6 +66,7 @@ install(DIRECTORY ../include/remod
 install(FILES ../include/remod.h
 	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
+install(FILES ${ASMJIT_LIBRARY_FILES} DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 install(EXPORT ReModCore-targets
     FILE ReModCore-targets.cmake
