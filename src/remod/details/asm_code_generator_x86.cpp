@@ -94,6 +94,40 @@ asmjit::X86Gp remod::details::asm_code_generator_x86::convert_remod_register(reg
 	}
 }
 
+uint32_t remod::details::asm_code_generator_x86::convert_remod_call_conv(calling_convention convention)
+{
+	switch (convention) {
+	case calling_convention::conv_stdcall: return asmjit::CallConv::kIdHostStdCall;
+	case calling_convention::conv_cdecl: return asmjit::CallConv::kIdHostCDecl;
+	case calling_convention::conv_thiscall: return asmjit::CallConv::kIdX86MsThisCall; // TODO: Support for GCC/Clang? 
+	case calling_convention::conv_fastcall: return asmjit::CallConv::kIdHostFastCall;
+	case calling_convention::conv_default: return asmjit::CallConv::kIdHost;
+	default:
+		throw std::runtime_error("Invalid calling convention");
+	}
+}
+
+void remod::details::asm_code_generator_x86::add_arg_to_dyn_sig(asmjit::FuncSignatureX & sig, std::size_t sizeOfReg)
+{
+	if (sizeOfReg == 4)
+		sig.addArgT<int>();
+	else if (sizeOfReg == 2)
+		sig.addArgT<short>();
+	else if (sizeOfReg == 1)
+		sig.addArgT<char>();
+	else
+		throw std::runtime_error("Other sizes than 4, 2 or 1 bytes are not supported at the moment");
+}
+
+// TODO: Validate arg sizes by 
+void remod::details::asm_code_generator_x86::add_args_to_dyn_sig(asmjit::FuncSignatureX& sig, const std::vector<std::size_t>& arg_sizes)
+{
+	for (int i = 0; i < arg_sizes.size(); ++i) {
+		add_arg_to_dyn_sig(sig, arg_sizes[i]);
+	}
+}
+
+/*
 std::intptr_t remod::details::asm_code_generator_x86::generator_call_conv_detour(const detour_point& to_convert, std::intptr_t context_value, std::intptr_t func_to_call)
 {
 	// Grab the information we need
@@ -169,38 +203,134 @@ std::intptr_t remod::details::asm_code_generator_x86::generator_call_conv_detour
 
 	return fn;
 }
+*/
+
+std::intptr_t remod::details::asm_code_generator_x86::generator_call_conv_detour_2(const detour_point & to_convert, std::intptr_t context_value, std::intptr_t func_to_call)
+{
+	// Grab the information we need
+	calling_convention source_call_conv = to_convert.get_calling_convention();
+	source_call_conv = source_call_conv == calling_convention::conv_default ? calling_convention::conv_cdecl : source_call_conv; // default --> cdecl
+
+	const auto& arg_sizes = to_convert.get_arg_sizes();
+	
+	asmjit::CodeHolder code;// Holds code and relocation information.
+	code.init(get_runtime().getCodeInfo());// Initialize to the same arch as JIT runtime.
+
+	// Init compiler
+	asmjit::X86Compiler cc(&code); // Create and attach X86Compiler to `code`.
+
+	// Add Func Wrapper
+	std::uint32_t call_conv_id_source = convert_remod_call_conv(source_call_conv);
+	asmjit::FuncSignatureX dynCallerFuncSig(call_conv_id_source);
+	add_args_to_dyn_sig(dynCallerFuncSig, arg_sizes);
+	dynCallerFuncSig.setRetT<int>();
+	cc.addFunc(dynCallerFuncSig);
+
+	// Setup target func
+	asmjit::FuncSignatureX dynCalleeFuncSig(asmjit::CallConv::kIdHostCDecl);
+	dynCalleeFuncSig.addArgT<int>(); // Context value;
+	add_args_to_dyn_sig(dynCalleeFuncSig, arg_sizes);
+	// Now manage captures
+	for (const auto& captures : to_convert.get_captures())
+	{
+		std::visit(overloaded{
+			[&](const stack_capture& stack_captures)
+			{
+				// TODO: Impl
+				// TODO: Check if detour_point caller stack size does fit
+				// detour_stack_to_manage += stack_captures.get_capture_size();
+			},
+			[&](const argument_capture& argument_captures)
+			{
+				// TODO: Impl
+				// detour_stack_to_manage += argument_captures.get_capture_size();
+			},
+			[&](const register_capture& register_captures)
+			{
+				add_arg_to_dyn_sig(dynCalleeFuncSig, register_captures.get_capture_size());
+			}
+		}, captures);
+	}
+
+	dynCalleeFuncSig.setRetT<int>();
+
+	asmjit::CCFuncCall* funcCall = cc.call(func_to_call, dynCalleeFuncSig);
+	funcCall->setArg(0, asmjit::Imm(context_value));
+	for (int i = 0; i < arg_sizes.size(); ++i) {
+		int arg_size = arg_sizes[i];
+		if (arg_size == 4) {
+			auto reg = cc.newInt32();
+			cc.setArg(i, reg);
+			funcCall->setArg(i+1, reg);
+		} else if (arg_size == 2) {
+			auto reg = cc.newInt16();
+			cc.setArg(i, reg);
+			funcCall->setArg(i+1, reg);
+		} else if (arg_size == 1) {
+			auto reg = cc.newInt8();
+			cc.setArg(i, reg);
+			funcCall->setArg(i+1, reg);
+		} else
+			throw std::runtime_error("Other sizes than 4, 2 or 1 bytes are not supported at the moment");
+	}
+
+	int currentArgIndex = arg_sizes.size() + 1;
+	// Now manage captures
+	for (const auto& captures : to_convert.get_captures())
+	{
+		std::visit(overloaded{
+			[&](const stack_capture& stack_captures)
+			{
+				// TODO: Impl
+				// TODO: Check if detour_point caller stack size does fit
+				// detour_stack_to_manage += stack_captures.get_capture_size();
+			},
+			[&](const argument_capture& argument_captures)
+			{
+				// TODO: Impl
+				// detour_stack_to_manage += argument_captures.get_capture_size();
+			},
+			[&](const register_capture& register_captures)
+			{
+				funcCall->setArg(currentArgIndex++, convert_remod_register(register_captures.get_register()));
+			}
+		}, captures);
+	}
+	
+
+	asmjit::X86Gp vReg = cc.newGpd();
+	funcCall->setRet(0, vReg);
+	cc.ret(vReg);
+
+	cc.endFunc();
+	cc.finalize();
+
+	std::intptr_t fn = 0;
+	asmjit::ErrorCode err = static_cast<asmjit::ErrorCode>(get_runtime().add(&fn, &code));
+	if (err) 
+		throw std::runtime_error(std::string("Failed to generate code for detour: ") + asmjit::DebugUtils::errorAsString(err));
+	
+	return fn;
+}
 
 std::intptr_t remod::details::asm_code_generator_x86::generate_orig_func_wrapper(const detour_point& to_convert,
 	std::intptr_t func_to_call)
 {
-	// TODO / FIXME: Check calling convention with registers --> Fastcall / Thiscall
+	/*
 
-	// TODO: Re-Push everything fully
+	// Grab the information we need
+	calling_convention source_call_conv = to_convert.get_calling_convention();
+	source_call_conv = source_call_conv == calling_convention::conv_default ? calling_convention::conv_cdecl : source_call_conv; // default --> cdecl
 
-	int size_of_captures = 0;
-	for (const auto& next_captures : to_convert.get_captures())
-	{
-		std::visit([&size_of_captures](const auto& capture)
-		{
-			size_of_captures += capture.get_capture_size();
-		}, next_captures);
-	}
+	const auto& arg_sizes = to_convert.get_arg_sizes();
 
 	asmjit::CodeHolder code;// Holds code and relocation information.
 	code.init(get_runtime().getCodeInfo());// Initialize to the same arch as JIT runtime.
-	asmjit::X86Assembler a(&code); // Init assembler
 
-	// a.int3();
-	a.add(asmjit::x86::esp, size_of_captures); // Remove args from stack
-	a.call(func_to_call);
-	if(to_convert.get_calling_convention() == calling_convention::conv_cdecl)
-		a.sub(asmjit::x86::esp, size_of_captures); // Add args to stack again
-	a.ret();
+	// Init compiler
+	asmjit::X86Compiler cc(&code); // Create and attach X86Compiler to `code`.
 
-	std::intptr_t fn = 0;
-	asmjit::ErrorCode err = static_cast<asmjit::ErrorCode>(get_runtime().add(&fn, &code));
-	if (err)
-		throw std::runtime_error("Failed to generate code for detour redirect correction function");
+	*/
 
-	return fn;
+	return 0u;
 }

@@ -179,6 +179,7 @@ int REMOD_NOINLINE use_big_example_struct_function()
 }
 
 
+/*
 TEST_CASE("Test with big struct", "[remod-trackable-function-patch]")
 {
 	REQUIRE(use_big_example_struct_function() == 130);
@@ -208,9 +209,10 @@ TEST_CASE("Test with invalid fastcall signature", "[remod-trackable-function-on_
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 	REQUIRE_THROWS_WITH(my_patch_manager.apply_trackable_function_patch({ to_patch , remod::calling_convention::conv_fastcall, invalid_sig }, invalid_sig), "Second fastcall argument must be equal or smaller than 4 bytes");
 }
+*/
 
 
-/*
+
 TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
 {
 	void* stack_tmp = nullptr;
@@ -221,7 +223,7 @@ TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
 	// This is the on_patch manager, holding all patches
 	remod::patch_manager<remod::resolve_strategy_noop> my_patch_manager;
 
-	auto calc_patch = [main_stack_loc](int func_stack_loc, int a, int b)
+	auto calc_patch = [main_stack_loc](int a, int b, int func_stack_loc)
 	{
 		REQUIRE(main_stack_loc >= func_stack_loc); // Stack pointer should have shrunk
 		return a + b;
@@ -231,12 +233,12 @@ TEST_CASE("Test with register capture", "[remod-trackable-function-patch]")
 	my_detour.set_convention(remod::calling_convention::conv_stdcall);
 	my_detour.add_argument<int>(); // arg b
 	my_detour.add_argument<int>(); // arg a
-	my_detour.add_capture(remod::register_capture(remod::registers::esp));
+	my_detour.add_capture(remod::register_capture(remod::registers::edx));
 
 	auto my_trackable_patch = my_patch_manager.apply_trackable_function_patch(my_detour, calc_patch);
 
 	REQUIRE(calc_sub_usage_example() == 5);
 }
 
-*/
+
 

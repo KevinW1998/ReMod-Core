@@ -31,7 +31,7 @@ void remod::base_patch_manager::generate_function_patch(std::uintptr_t addr_for_
 	}
 
 	// Create stub
-	std::intptr_t func_stub = m_generator->generator_call_conv_detour(detour_point_to_apply, reinterpret_cast<std::intptr_t>(patch), reinterpret_cast<std::intptr_t>(proxy));
+	std::intptr_t func_stub = m_generator->generator_call_conv_detour_2(detour_point_to_apply, reinterpret_cast<std::intptr_t>(patch), reinterpret_cast<std::intptr_t>(proxy));
 
 	// calculate relative address
 	std::int32_t rel_func_stub_addr = func_stub - addr_for_patch - 5;
