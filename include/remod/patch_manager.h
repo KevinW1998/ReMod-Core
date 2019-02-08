@@ -83,7 +83,6 @@ namespace remod
 			return wrapper;
 		}
 
-		template<typename T>
 		trackable_wrapper<trackable_memory_patch> create_trackable_memory_patch_with_data(std::uintptr_t pointer, std::vector<std::uint8_t> data)
 		{
 			trackable_wrapper<trackable_memory_patch> wrapper = create_trackable_memory_patch();
