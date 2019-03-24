@@ -112,6 +112,10 @@ namespace remod
 			return out;
 		}
 
+		std::uintptr_t resolve(std::uintptr_t offset) {
+			ResolveStrategy::resolve(offset, m_mod);
+			return offset;
+		}
 	};
 }
 
