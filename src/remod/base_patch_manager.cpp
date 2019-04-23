@@ -1,6 +1,7 @@
 
 #include <remod/base_patch_manager.h>
 #include "remod/patch_engine.h"
+#include <stdexcept>
 
 #include "details/asm_code_generator_impl.h"
 
