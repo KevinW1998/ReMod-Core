@@ -1,6 +1,7 @@
 #include <remod/details/trackable_memory_patch_base.h>
 
 #include <remod/patch_engine.h>
+#include <stdexcept>
 
 void remod::trackable_memory_patch_base::ensure_unpatched() const
 {
