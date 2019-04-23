@@ -1,6 +1,7 @@
 
 #include "asm_code_generator_x86.h"
 #include <numeric>
+#include <stdexcept>
 
 #include <remod/details/overloaded.h>
 #include "asm_code_helper.h"
