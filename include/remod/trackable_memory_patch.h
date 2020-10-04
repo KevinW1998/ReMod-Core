@@ -2,6 +2,7 @@
 
 #include "details/trackable_memory_patch_base.h"
 #include <vector>
+#include <iterator>
 #include <type_traits>
 
 namespace remod
